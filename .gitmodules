@@ -1,0 +1,3 @@
+[submodule "Plugins/TDMCH_Tools"]
+	path = Plugins/TDMCH_Tools
+	url = https://github.com/Tudumch/TDMCH_Tools.git
