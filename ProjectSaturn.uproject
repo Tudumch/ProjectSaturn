@@ -5,11 +5,12 @@
 	"Description": "",
 	"Modules": [
 		{
-			"Name": "ProjectArena",
+			"Name": "ProjectSaturn",
 			"Type": "Runtime",
 			"LoadingPhase": "Default",
 			"AdditionalDependencies": [
-				"Engine"
+				"Engine",
+				"TDMCH_Tools"
 			]
 		}
 	],

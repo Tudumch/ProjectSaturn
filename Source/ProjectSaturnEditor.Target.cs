@@ -3,13 +3,13 @@
 using UnrealBuildTool;
 using System.Collections.Generic;
 
-public class ProjectArenaEditorTarget : TargetRules
+public class ProjectSaturnEditorTarget : TargetRules
 {
-	public ProjectArenaEditorTarget(TargetInfo Target) : base(Target)
+	public ProjectSaturnEditorTarget(TargetInfo Target) : base(Target)
 	{
 		Type = TargetType.Editor;
 		DefaultBuildSettings = BuildSettingsVersion.V5;
 
-		ExtraModuleNames.AddRange( new string[] { "ProjectArena" } );
+		ExtraModuleNames.AddRange( new string[] { "ProjectSaturn" } );
 	}
 }
