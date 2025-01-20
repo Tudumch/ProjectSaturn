@@ -4,9 +4,15 @@
 #include "Components/PS_CharacterMovementComponent.h"
 #include "EnhancedInputComponent.h"
 
+#include "Components/PS_EnergyComponent.h"
+
 void UPS_CharacterMovementComponent::Move(const FInputActionValue& Value)
 {
-    if(!OwnerPawn) return;
+    if(!OwnerPawn || !EnergyComponent) return;
+
+    float EnergyNeeded;
+    IsRunning ? EnergyNeeded = EnergyForRunning : EnergyNeeded = EnergyForWalking;
+    if (EnergyComponent->GetCurrentEnergy() < EnergyNeeded) return;
     
     const FVector2D MovementVector = Value.Get<FVector2D>();
     const FRotator Rotation = GetController()->GetControlRotation();
@@ -17,6 +23,8 @@ void UPS_CharacterMovementComponent::Move(const FInputActionValue& Value)
 
     const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
     OwnerPawn->AddMovementInput(RightDirection, MovementVector.Y);
+
+    EnergyComponent->ConsumeEnergy(EnergyNeeded);
 }
 
 void UPS_CharacterMovementComponent::Look(const FInputActionValue& Value)
@@ -41,5 +49,6 @@ void UPS_CharacterMovementComponent::BeginPlay()
 
     PlayerController = Cast<APlayerController>(GetController());
     OwnerPawn = PlayerController->GetPawn();
+    EnergyComponent = OwnerPawn->FindComponentByClass<UPS_EnergyComponent>();
     MaxWalkSpeedCached = MaxWalkSpeed;
 }

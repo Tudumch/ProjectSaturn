@@ -34,7 +34,7 @@ void APS_ControllerPlayer_Base::SetupInputComponent()
     EnhancedInputComponent->BindAction(PauseIA, ETriggerEvent::Completed, this, &ThisClass::Pause);
     EnhancedInputComponent->BindAction(MoveIA, ETriggerEvent::Triggered, this, &ThisClass::Move);
     EnhancedInputComponent->BindAction(LookIA, ETriggerEvent::Triggered, this, &ThisClass::Look);
-    EnhancedInputComponent->BindAction(RunIA, ETriggerEvent::Completed, this, &ThisClass::ToggleRun);
+    EnhancedInputComponent->BindAction(RunIA, ETriggerEvent::Started, this, &ThisClass::ToggleRun);
 }
 
 void APS_ControllerPlayer_Base::Look(const FInputActionValue& Value)

@@ -12,17 +12,25 @@
 UCLASS()
 class PROJECTSATURN_API APS_CharacterBase : public ACharacter
 {
-	GENERATED_BODY()
+    GENERATED_BODY()
     
 public:
     APS_CharacterBase(const FObjectInitializer& ObjectInitializer);
+
+    
 
 protected:
     UPROPERTY()
     APlayerController* PlayerController;
 
+
+
     UPROPERTY (EditAnywhere, BlueprintReadWrite)
     class USpringArmComponent* SpringArm;
     UPROPERTY (EditAnywhere, BlueprintReadWrite)
     class UCameraComponent* Camera;
+    UPROPERTY (EditAnywhere, BlueprintReadWrite)
+    class UPS_EnergyComponent* EnergyComponent;
+
+    void BeginPlay() override;
 };

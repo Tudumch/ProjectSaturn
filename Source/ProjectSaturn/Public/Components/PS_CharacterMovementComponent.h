@@ -27,10 +27,18 @@ protected:
     APawn* OwnerPawn;
     
     UPROPERTY()
+    class UPS_EnergyComponent* EnergyComponent;
+    
+    UPROPERTY()
     APlayerController* PlayerController;
     
     UPROPERTY(EditAnywhere, Category = "Character Movement: Walking")
     float MaxRunSpeed = 600;
+    
+    UPROPERTY(EditAnywhere, Category = "Energy Consumption")
+    float EnergyForWalking = 0.1;
+    UPROPERTY(EditAnywhere, Category = "Energy Consumption")
+    float EnergyForRunning = 0.2;
     
     UPROPERTY()
     float MaxWalkSpeedCached;
