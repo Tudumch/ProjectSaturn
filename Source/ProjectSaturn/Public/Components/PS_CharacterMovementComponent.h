@@ -30,10 +30,10 @@ protected:
     APlayerController* PlayerController;
     
     UPROPERTY(EditAnywhere, Category = "Character Movement: Walking")
-    float MaxRunSpeed = 1000;
+    float MaxRunSpeed = 600;
     
     UPROPERTY()
-    float MaxWalkSpeedCached = Super::MaxWalkSpeed;
+    float MaxWalkSpeedCached;
     
     UPROPERTY()
     bool IsRunning = false;

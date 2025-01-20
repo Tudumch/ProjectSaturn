@@ -41,4 +41,5 @@ void UPS_CharacterMovementComponent::BeginPlay()
 
     PlayerController = Cast<APlayerController>(GetController());
     OwnerPawn = PlayerController->GetPawn();
+    MaxWalkSpeedCached = MaxWalkSpeed;
 }
