@@ -9,7 +9,6 @@ void APS_HUDBase::BeginPlay()
 {
     Super::BeginPlay();
 
-    GetOwningPlayerController()->SetInputMode(FInputModeGameOnly());
     WidgetHUD = CreateWidget<UUserWidget>(GetWorld(), WidgetHUDClass);
     if (WidgetHUD) WidgetHUD->AddToViewport();
 }

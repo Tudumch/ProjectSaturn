@@ -14,6 +14,7 @@ void APS_ControllerPlayer_Base::BeginPlay()
     Super::BeginPlay();
 
     DefineCoreVariables();
+    SetInputMode(FInputModeGameOnly());
 }
 
 void APS_ControllerPlayer_Base::SetupInputComponent()
