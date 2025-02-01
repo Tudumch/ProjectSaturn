@@ -38,7 +38,7 @@ protected:
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     class UStaticMeshComponent* StaticMesh;
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    class UTextRenderComponent* TextTooltip;
+    class UWidgetComponent* TextTooltip;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
     FInteractionAnimationsStorage AnimationStorage;

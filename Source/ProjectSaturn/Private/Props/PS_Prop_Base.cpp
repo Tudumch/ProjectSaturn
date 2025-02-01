@@ -4,7 +4,7 @@
 #include "Props/PS_Prop_Base.h"
 
 #include "Components/StaticMeshComponent.h"
-#include "Components/TextRenderComponent.h"
+#include "Components/WidgetComponent.h"
 #include "GameFramework/Character.h"
 
 // Sets default values
@@ -15,8 +15,9 @@ APS_Prop_Base::APS_Prop_Base()
     StaticMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMesh"));
     RootComponent = StaticMesh;
     
-    TextTooltip = CreateDefaultSubobject<UTextRenderComponent>(TEXT("TextTooltip"));
+    TextTooltip = CreateDefaultSubobject<UWidgetComponent>(TEXT("TextTooltip"));
     TextTooltip->SetupAttachment(RootComponent);
+    TextTooltip->SetWidgetSpace(EWidgetSpace::Screen);
 }
 
 void APS_Prop_Base::Interact(ACharacter* Character)
@@ -24,7 +25,12 @@ void APS_Prop_Base::Interact(ACharacter* Character)
     USkeletalMeshComponent* Mesh = Character->GetMesh();
     if (!Mesh) return;
 
-    if (AnimationStorage.InteractionAnimation)
+    if (!AnimationStorage.InteractionAnimation)
+    {
+        UE_LOG(LogTemp, Error, TEXT("Interaction Animation does not set for %s"), *this->GetName());
+        return;
+    }
+    
     Mesh->PlayAnimation(AnimationStorage.InteractionAnimation, true);
 }
 
