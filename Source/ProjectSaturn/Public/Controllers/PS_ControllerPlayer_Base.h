@@ -34,6 +34,8 @@ protected:
     UInputAction* MoveIA;
     UPROPERTY (EditAnywhere, Category = "Input")
     UInputAction* RunIA;
+    UPROPERTY (EditAnywhere, Category = "Input")
+    UInputAction* InteractIA;
 
     virtual void BeginPlay() override;
     virtual void SetupInputComponent() override;
@@ -44,6 +46,8 @@ protected:
     virtual void Move(const FInputActionValue& Value);
     UFUNCTION(BlueprintCallable, Category = "Input")
     virtual void ToggleRun();
+    UFUNCTION(BlueprintCallable, Category = "Input")
+    virtual void Interact();
 
 private:
     void DefineCoreVariables();

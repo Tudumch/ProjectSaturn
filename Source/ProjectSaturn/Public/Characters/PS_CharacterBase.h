@@ -17,7 +17,8 @@ class PROJECTSATURN_API APS_CharacterBase : public ACharacter
 public:
     APS_CharacterBase(const FObjectInitializer& ObjectInitializer);
 
-    
+    UFUNCTION(BlueprintCallable)
+    void Interact();
 
 protected:
     UPROPERTY()
@@ -30,7 +31,16 @@ protected:
     UPROPERTY (EditAnywhere, BlueprintReadWrite)
     class UCameraComponent* Camera;
     UPROPERTY (EditAnywhere, BlueprintReadWrite)
+    class USphereComponent* InteractionRadius;
+    UPROPERTY (EditAnywhere, BlueprintReadWrite)
     class UPS_EnergyComponent* EnergyComponent;
 
-    void BeginPlay() override;
+    class IPS_InteractableProp* NearbyInteractableProp; // stores last overlapped interactable prop
+
+    virtual void BeginPlay() override;
+
+    UFUNCTION(BlueprintCallable)
+    void OnInteractionRadiusOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+    UFUNCTION(BlueprintCallable)
+    void OnInteractionRadiusOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 };
