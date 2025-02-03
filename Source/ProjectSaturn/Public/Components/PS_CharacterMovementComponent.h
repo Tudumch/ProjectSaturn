@@ -24,7 +24,7 @@ public:
 
 protected:
     UPROPERTY()
-    APawn* OwnerPawn;
+    class APS_CharacterBase* OwnerCharacter;
     
     UPROPERTY()
     class UPS_EnergyComponent* EnergyComponent;
@@ -46,5 +46,5 @@ protected:
     UPROPERTY()
     bool IsRunning = false;
 
-    void BeginPlay() override;
+    virtual void BeginPlay() override;
 };

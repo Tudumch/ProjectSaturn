@@ -20,18 +20,13 @@ APS_Prop_Base::APS_Prop_Base()
     TextTooltip->SetWidgetSpace(EWidgetSpace::Screen);
 }
 
-void APS_Prop_Base::Interact(ACharacter* Character)
+void APS_Prop_Base::StartInteract(ACharacter* Character)
 {
-    USkeletalMeshComponent* Mesh = Character->GetMesh();
-    if (!Mesh) return;
+    if (!Character) return;
+}
 
-    if (!AnimationStorage.InteractionAnimation)
-    {
-        UE_LOG(LogTemp, Error, TEXT("Interaction Animation does not set for %s"), *this->GetName());
-        return;
-    }
-    
-    Mesh->PlayAnimation(AnimationStorage.InteractionAnimation, true);
+void APS_Prop_Base::StopInteract()
+{
 }
 
 void APS_Prop_Base::ShowTooltip(const bool Value)
@@ -45,5 +40,3 @@ void APS_Prop_Base::BeginPlay()
 
     ShowTooltip(false);
 }
-
-

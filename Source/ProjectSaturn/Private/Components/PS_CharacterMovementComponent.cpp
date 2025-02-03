@@ -4,11 +4,14 @@
 #include "Components/PS_CharacterMovementComponent.h"
 #include "EnhancedInputComponent.h"
 
+#include "Characters/PS_CharacterBase.h"
+
 #include "Components/PS_EnergyComponent.h"
 
 void UPS_CharacterMovementComponent::Move(const FInputActionValue& Value)
 {
-    if(!OwnerPawn || !EnergyComponent) return;
+    if(!OwnerCharacter || !EnergyComponent) return;
+    if (OwnerCharacter->IsInteracting()) return;
 
     float EnergyNeeded;
     IsRunning ? EnergyNeeded = EnergyForRunning : EnergyNeeded = EnergyForWalking;
@@ -19,10 +22,10 @@ void UPS_CharacterMovementComponent::Move(const FInputActionValue& Value)
     const FRotator YawRotation(0.f, Rotation.Yaw, 0.f);
 
     const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
-    OwnerPawn->AddMovementInput(ForwardDirection, MovementVector.X);
+    OwnerCharacter->AddMovementInput(ForwardDirection, MovementVector.X);
 
     const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
-    OwnerPawn->AddMovementInput(RightDirection, MovementVector.Y);
+    OwnerCharacter->AddMovementInput(RightDirection, MovementVector.Y);
 
     EnergyComponent->ConsumeEnergy(EnergyNeeded);
 }
@@ -48,7 +51,7 @@ void UPS_CharacterMovementComponent::BeginPlay()
     Super::BeginPlay();
 
     PlayerController = Cast<APlayerController>(GetController());
-    OwnerPawn = PlayerController->GetPawn();
-    EnergyComponent = OwnerPawn->FindComponentByClass<UPS_EnergyComponent>();
+    OwnerCharacter = Cast<APS_CharacterBase>(PlayerController->GetPawn());
+    EnergyComponent = OwnerCharacter->FindComponentByClass<UPS_EnergyComponent>();
     MaxWalkSpeedCached = MaxWalkSpeed;
 }

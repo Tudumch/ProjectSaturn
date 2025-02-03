@@ -8,7 +8,7 @@
 
 #include "Components/PS_EnergyComponent.h"
 #include "Components/SphereComponent.h"
-#include "Interfaces/PS_InteractableProp.h"
+#include "Props/PS_Prop_Base.h"
 
 APS_CharacterBase::APS_CharacterBase(const FObjectInitializer& ObjectInitializer)
 : Super(ObjectInitializer.SetDefaultSubobjectClass<UPS_CharacterMovementComponent>(ACharacter::CharacterMovementComponentName))
@@ -29,12 +29,6 @@ APS_CharacterBase::APS_CharacterBase(const FObjectInitializer& ObjectInitializer
     InteractionRadius->OnComponentEndOverlap.AddDynamic(this, &APS_CharacterBase::OnInteractionRadiusOverlapEnd);
 }
 
-void APS_CharacterBase::Interact()
-{
-    if (!NearbyInteractableProp) return;
-
-    NearbyInteractableProp->Interact(this);
-}
 
 void APS_CharacterBase::BeginPlay()
 {
@@ -44,7 +38,7 @@ void APS_CharacterBase::BeginPlay()
 void APS_CharacterBase::OnInteractionRadiusOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
     UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-    NearbyInteractableProp = Cast<IPS_InteractableProp>(OtherActor);
+    NearbyInteractableProp = Cast<APS_Prop_Base>(OtherActor);
     if (NearbyInteractableProp) NearbyInteractableProp->ShowTooltip(true);
 }
 
@@ -53,4 +47,44 @@ void APS_CharacterBase::OnInteractionRadiusOverlapEnd(UPrimitiveComponent* Overl
 {
     if (NearbyInteractableProp) NearbyInteractableProp->ShowTooltip(false);
     NearbyInteractableProp = nullptr;
+}
+
+// ----------------------------
+// Prop interaction functions
+void APS_CharacterBase::Interact()
+{
+    if (!NearbyInteractableProp) return;
+
+    bIsInteracting ? EndInteraction() : StartInteraction();
+}
+
+void APS_CharacterBase::StartInteraction()
+{
+    Interact_Starting();
+    bIsInteracting = true;
+}
+
+void APS_CharacterBase::EndInteraction()
+{
+    Interact_Ending();
+    bIsInteracting = false;
+}
+
+void APS_CharacterBase::Interact_Starting()
+{
+    float MontageDuration = PlayAnimMontage(NearbyInteractableProp->AnimationStorage.StartingInteractionAnimation);
+    FTimerHandle TimerHandle;
+    GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ThisClass::Interact_InProgress, MontageDuration, false);
+}
+
+void APS_CharacterBase::Interact_InProgress()
+{
+    PlayAnimMontage(NearbyInteractableProp->AnimationStorage.InteractionAnimation);
+    NearbyInteractableProp->StartInteract(this);
+}
+
+void APS_CharacterBase::Interact_Ending()
+{
+    PlayAnimMontage(NearbyInteractableProp->AnimationStorage.EndingInteractionAnimation);
+    NearbyInteractableProp->StopInteract();
 }

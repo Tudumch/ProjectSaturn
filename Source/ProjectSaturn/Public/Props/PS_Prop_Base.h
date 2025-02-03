@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "Interfaces/PS_InteractableProp.h"
 #include "PS_Prop_Base.generated.h"
 
 // Contains all character's animations needed to interact with the props
@@ -14,36 +13,36 @@ struct FInteractionAnimationsStorage
     GENERATED_BODY()
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
-    class UAnimationAsset* StartingInteractionAnimation;
+    class UAnimMontage* StartingInteractionAnimation;
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
-    class UAnimationAsset* InteractionAnimation;
+    class UAnimMontage* InteractionAnimation;
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
-    class UAnimationAsset* EndingInteractionAnimation;
+    class UAnimMontage* EndingInteractionAnimation;
 };
 
 UCLASS()
-class PROJECTSATURN_API APS_Prop_Base : public AActor, public IPS_InteractableProp
+class PROJECTSATURN_API APS_Prop_Base : public AActor
 {
 	GENERATED_BODY()
 	
 public:	
 	APS_Prop_Base();
     
+    UFUNCTION(BlueprintCallable)
+    virtual void StartInteract(ACharacter* Character);
+    UFUNCTION(BlueprintCallable)
+    virtual void StopInteract();
     UFUNCTION()
-    virtual void Interact(ACharacter* Character) override;
-    UFUNCTION()
-    virtual void ShowTooltip(const bool Value) override;
+    virtual void ShowTooltip(const bool Value);
+    
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
+    FInteractionAnimationsStorage AnimationStorage;
     
 protected:
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     class UStaticMeshComponent* StaticMesh;
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     class UWidgetComponent* TextTooltip;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
-    FInteractionAnimationsStorage AnimationStorage;
     
 	virtual void BeginPlay() override;
-
-
 };
