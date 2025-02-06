@@ -18,6 +18,10 @@ APS_Prop_Base::APS_Prop_Base()
     TextTooltip = CreateDefaultSubobject<UWidgetComponent>(TEXT("TextTooltip"));
     TextTooltip->SetupAttachment(RootComponent);
     TextTooltip->SetWidgetSpace(EWidgetSpace::Screen);
+
+    AnimationInteractionPoint = CreateDefaultSubobject<USceneComponent>(TEXT("AnimationInteractionPoint"));
+    AnimationInteractionPoint->SetupAttachment(RootComponent);
+    AnimationInteractionPoint->SetRelativeRotation(FRotator(0.f, 0.f, 90.f));
 }
 
 void APS_Prop_Base::StartInteract(ACharacter* Character)

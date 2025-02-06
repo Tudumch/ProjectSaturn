@@ -42,6 +42,8 @@ protected:
     class APS_Prop_Base* NearbyInteractableProp; // stores last overlapped interactable prop
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     bool bIsInteracting = false;
+    UPROPERTY()
+    FTimerHandle MontageDurationTimer;
 
     virtual void BeginPlay() override;
 
@@ -62,5 +64,7 @@ protected:
     void Interact_InProgress();
     UFUNCTION(BlueprintCallable)
     void Interact_Ending();
+    UFUNCTION()
+    void OnFinishPlayingEndingAnimMontage();
     // ---------------------------------
 };

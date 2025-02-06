@@ -62,29 +62,40 @@ void APS_CharacterBase::StartInteraction()
 {
     Interact_Starting();
     bIsInteracting = true;
+    
+    const FTransform PropInteractionPoint = NearbyInteractableProp->GetAnimInteractionPointTransforms();
+    this->SetActorLocation(PropInteractionPoint.GetLocation());
+    this->SetActorRotation(PropInteractionPoint.GetRotation());
 }
 
 void APS_CharacterBase::EndInteraction()
 {
     Interact_Ending();
-    bIsInteracting = false;
 }
 
 void APS_CharacterBase::Interact_Starting()
 {
     float MontageDuration = PlayAnimMontage(NearbyInteractableProp->AnimationStorage.StartingInteractionAnimation);
-    FTimerHandle TimerHandle;
-    GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ThisClass::Interact_InProgress, MontageDuration, false);
+    GetWorld()->GetTimerManager().SetTimer(MontageDurationTimer, this, &ThisClass::Interact_InProgress, MontageDuration, false);
 }
 
 void APS_CharacterBase::Interact_InProgress()
 {
+    GetWorldTimerManager().ClearTimer(MontageDurationTimer);
     PlayAnimMontage(NearbyInteractableProp->AnimationStorage.InteractionAnimation);
     NearbyInteractableProp->StartInteract(this);
 }
 
 void APS_CharacterBase::Interact_Ending()
 {
-    PlayAnimMontage(NearbyInteractableProp->AnimationStorage.EndingInteractionAnimation);
+    float MontageDuration = PlayAnimMontage(NearbyInteractableProp->AnimationStorage.EndingInteractionAnimation);
+    GetWorld()->GetTimerManager().SetTimer(MontageDurationTimer, this, &ThisClass::OnFinishPlayingEndingAnimMontage, MontageDuration, false);
+    
     NearbyInteractableProp->StopInteract();
+}
+
+void APS_CharacterBase::OnFinishPlayingEndingAnimMontage()
+{
+    bIsInteracting = false;
+    GetWorldTimerManager().ClearTimer(MontageDurationTimer);
 }

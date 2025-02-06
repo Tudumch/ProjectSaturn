@@ -34,11 +34,15 @@ public:
     virtual void StopInteract();
     UFUNCTION()
     virtual void ShowTooltip(const bool Value);
+    UFUNCTION(BlueprintPure)
+    FTransform GetAnimInteractionPointTransforms() const { return AnimationInteractionPoint->GetComponentTransform(); };
     
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
     FInteractionAnimationsStorage AnimationStorage;
     
 protected:
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    USceneComponent* AnimationInteractionPoint;
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     class UStaticMeshComponent* StaticMesh;
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
