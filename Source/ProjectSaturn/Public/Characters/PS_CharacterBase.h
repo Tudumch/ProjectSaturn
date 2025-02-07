@@ -20,8 +20,8 @@ public:
     UFUNCTION(BlueprintCallable)
     void Interact();
 
-    UFUNCTION(BlueprintCallable)
-    bool IsInteracting() { return bIsInteracting; }
+    UFUNCTION(BlueprintPure)
+    bool IsInteracting() const { return bIsInteracting; } 
 
 protected:
     UPROPERTY()
@@ -40,6 +40,8 @@ protected:
 
     UPROPERTY()
     class APS_Prop_Base* NearbyInteractableProp; // stores last overlapped interactable prop
+    UPROPERTY(BlueprintReadWrite)
+    class UPS_AnimInstance* AnimInstance;
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     bool bIsInteracting = false;
     UPROPERTY()
@@ -52,19 +54,12 @@ protected:
     UFUNCTION(BlueprintCallable)
     void OnInteractionRadiusOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
-    // ---------------------------------
-    // Interaction with props section
     UFUNCTION(BlueprintCallable)
     void StartInteraction();
     UFUNCTION(BlueprintCallable)
     void EndInteraction();
-    UFUNCTION(BlueprintCallable)
-    void Interact_Starting();
-    UFUNCTION(BlueprintCallable)
-    void Interact_InProgress();
-    UFUNCTION(BlueprintCallable)
-    void Interact_Ending();
     UFUNCTION()
-    void OnFinishPlayingEndingAnimMontage();
-    // ---------------------------------
+    void OnFinishPlayStartingAnimMontage();
+    UFUNCTION()
+    void OnFinishPlayEndingAnimMontage();
 };

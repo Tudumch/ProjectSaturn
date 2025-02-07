@@ -2,6 +2,8 @@
 
 
 #include "Characters/PS_CharacterBase.h"
+
+#include "Animation/PS_AnimInstance.h"
 #include "Components/PS_CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
@@ -18,7 +20,7 @@ APS_CharacterBase::APS_CharacterBase(const FObjectInitializer& ObjectInitializer
     SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArmComponent"));
     Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("CameraComponent"));
     InteractionRadius = CreateDefaultSubobject<USphereComponent>(TEXT("InteractionRadius"));
-    InteractionRadius->SetSphereRadius(130);
+    InteractionRadius->SetSphereRadius(200);
     EnergyComponent = CreateDefaultSubobject<UPS_EnergyComponent>(TEXT("EnergyComponent"));
 
     SpringArm->SetupAttachment(RootComponent);
@@ -33,6 +35,7 @@ APS_CharacterBase::APS_CharacterBase(const FObjectInitializer& ObjectInitializer
 void APS_CharacterBase::BeginPlay()
 {
     Super::BeginPlay();
+    AnimInstance = Cast<UPS_AnimInstance>(GetMesh()->GetAnimInstance());
 }
 
 void APS_CharacterBase::OnInteractionRadiusOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
@@ -60,8 +63,11 @@ void APS_CharacterBase::Interact()
 
 void APS_CharacterBase::StartInteraction()
 {
-    Interact_Starting();
     bIsInteracting = true;
+    
+    if (!AnimInstance) return;
+    float MontageDuration = AnimInstance->StartInteractionWithProp(NearbyInteractableProp);
+    GetWorld()->GetTimerManager().SetTimer(MontageDurationTimer, this, &ThisClass::OnFinishPlayStartingAnimMontage, MontageDuration, false);
     
     const FTransform PropInteractionPoint = NearbyInteractableProp->GetAnimInteractionPointTransforms();
     this->SetActorLocation(PropInteractionPoint.GetLocation());
@@ -70,31 +76,20 @@ void APS_CharacterBase::StartInteraction()
 
 void APS_CharacterBase::EndInteraction()
 {
-    Interact_Ending();
-}
-
-void APS_CharacterBase::Interact_Starting()
-{
-    float MontageDuration = PlayAnimMontage(NearbyInteractableProp->AnimationStorage.StartingInteractionAnimation);
-    GetWorld()->GetTimerManager().SetTimer(MontageDurationTimer, this, &ThisClass::Interact_InProgress, MontageDuration, false);
-}
-
-void APS_CharacterBase::Interact_InProgress()
-{
-    GetWorldTimerManager().ClearTimer(MontageDurationTimer);
-    PlayAnimMontage(NearbyInteractableProp->AnimationStorage.InteractionAnimation);
-    NearbyInteractableProp->StartInteract(this);
-}
-
-void APS_CharacterBase::Interact_Ending()
-{
-    float MontageDuration = PlayAnimMontage(NearbyInteractableProp->AnimationStorage.EndingInteractionAnimation);
-    GetWorld()->GetTimerManager().SetTimer(MontageDurationTimer, this, &ThisClass::OnFinishPlayingEndingAnimMontage, MontageDuration, false);
-    
     NearbyInteractableProp->StopInteract();
+    
+    if (!AnimInstance) return;
+    float MontageDuration = AnimInstance->EndInteractionWithProp(NearbyInteractableProp);
+    GetWorld()->GetTimerManager().SetTimer(MontageDurationTimer, this, &ThisClass::OnFinishPlayEndingAnimMontage, MontageDuration, false);
 }
 
-void APS_CharacterBase::OnFinishPlayingEndingAnimMontage()
+void APS_CharacterBase::OnFinishPlayStartingAnimMontage()
+{
+    NearbyInteractableProp->StartInteract(this);
+    GetWorldTimerManager().ClearTimer(MontageDurationTimer);
+}
+
+void APS_CharacterBase::OnFinishPlayEndingAnimMontage()
 {
     bIsInteracting = false;
     GetWorldTimerManager().ClearTimer(MontageDurationTimer);
