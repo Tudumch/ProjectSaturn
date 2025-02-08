@@ -11,8 +11,14 @@ UPS_EnergyComponent::UPS_EnergyComponent()
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = false;
+    CurrentEnergy = MaxEnergy;
 
 	// ...
+}
+
+void UPS_EnergyComponent::AddEnergy(const float Value)
+{
+    CurrentEnergy = FMath::Clamp(CurrentEnergy + Value, 0.f, MaxEnergy);
 }
 
 

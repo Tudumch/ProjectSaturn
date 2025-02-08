@@ -17,9 +17,9 @@ public:
 	UPS_EnergyComponent();
 
     UFUNCTION(BlueprintPure)
-    float GetCurrentEnergy() { return CurrentEnergy; };
+    float GetCurrentEnergy() const { return CurrentEnergy; };
     UFUNCTION(BlueprintCallable)
-    void AddEnergy(const float Value) { CurrentEnergy += Value; };
+    void AddEnergy(const float Value);
     UFUNCTION(BlueprintCallable)
     void ConsumeEnergy(const float Value) { CurrentEnergy -= Value; };
 
