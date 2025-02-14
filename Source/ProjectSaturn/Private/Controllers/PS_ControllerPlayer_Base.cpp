@@ -8,6 +8,9 @@
 
 #include "Characters/PS_CharacterBase.h"
 #include "Components/PS_CharacterMovementComponent.h"
+#include "PS_GameInstance.h"
+#include "Systems/LoadSaveSystem/PS_LoadSaveManager.h"
+
 
 void APS_ControllerPlayer_Base::BeginPlay()
 {
@@ -36,6 +39,8 @@ void APS_ControllerPlayer_Base::SetupInputComponent()
     EnhancedInputComponent->BindAction(LookIA, ETriggerEvent::Triggered, this, &ThisClass::Look);
     EnhancedInputComponent->BindAction(RunIA, ETriggerEvent::Started, this, &ThisClass::ToggleRun);
     EnhancedInputComponent->BindAction(InteractIA, ETriggerEvent::Started, this, &ThisClass::Interact);
+    EnhancedInputComponent->BindAction(SaveIA, ETriggerEvent::Started, this, &ThisClass::Save);
+    EnhancedInputComponent->BindAction(LoadIA, ETriggerEvent::Started, this, &ThisClass::Load);
 }
 
 void APS_ControllerPlayer_Base::Look(const FInputActionValue& Value)
@@ -63,6 +68,28 @@ void APS_ControllerPlayer_Base::Interact()
 {
     if (!PS_CharacterBase) return;
     PS_CharacterBase->Interact();
+}
+
+void APS_ControllerPlayer_Base::Save()
+{
+    UPS_GameInstance* GameInstance = Cast<UPS_GameInstance>(GetGameInstance());
+    if (!GameInstance) return;
+
+    APS_LoadSaveManager* LoadSaveManager = GameInstance->GetLoadSaveManager();
+    if (!LoadSaveManager) return;
+
+    LoadSaveManager->Save();
+}
+
+void APS_ControllerPlayer_Base::Load()
+{
+    UPS_GameInstance* GameInstance = Cast<UPS_GameInstance>(GetGameInstance());
+    if (!GameInstance) return;
+    
+    APS_LoadSaveManager* LoadSaveManager = GameInstance->GetLoadSaveManager();
+    if (!LoadSaveManager) return;
+
+    LoadSaveManager->Load();
 }
 
 void APS_ControllerPlayer_Base::DefineCoreVariables()

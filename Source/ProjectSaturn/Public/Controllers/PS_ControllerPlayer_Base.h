@@ -36,6 +36,10 @@ protected:
     UInputAction* RunIA;
     UPROPERTY (EditAnywhere, Category = "Input")
     UInputAction* InteractIA;
+    UPROPERTY (EditAnywhere, Category = "Input")
+    UInputAction* SaveIA;
+    UPROPERTY (EditAnywhere, Category = "Input")
+    UInputAction* LoadIA;
 
     virtual void BeginPlay() override;
     virtual void SetupInputComponent() override;
@@ -48,6 +52,10 @@ protected:
     virtual void ToggleRun();
     UFUNCTION(BlueprintCallable, Category = "Input")
     virtual void Interact();
+    UFUNCTION(BlueprintCallable, Category = "Input")
+    virtual void Save();
+    UFUNCTION(BlueprintCallable, Category = "Input")
+    virtual void Load();
 
 private:
     void DefineCoreVariables();
