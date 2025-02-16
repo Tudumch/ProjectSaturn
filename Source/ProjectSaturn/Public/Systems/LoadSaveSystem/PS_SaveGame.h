@@ -15,5 +15,8 @@ class PROJECTSATURN_API UPS_SaveGame : public USaveGame
 	GENERATED_BODY()
 
 public:
+    UPROPERTY(EditAnywhere)
     FTransform PlayerTransform;
+    UPROPERTY(EditAnywhere)
+    float PlayerCurrentEnergy;
 };

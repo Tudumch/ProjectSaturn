@@ -3,29 +3,60 @@
 
 #include "Systems/LoadSaveSystem/PS_LoadSaveManager.h"
 
+#include "Components/PS_EnergyComponent.h"
+#include "GameFramework/Character.h"
+#include "GameFramework/SaveGame.h"
+#include "Kismet/GameplayStatics.h"
+#include "Systems/LoadSaveSystem/PS_SaveGame.h"
+
 // Sets default values
 APS_LoadSaveManager::APS_LoadSaveManager()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
-
 }
 
 void APS_LoadSaveManager::Save()
 {
-    // TODO: implement player character position saving 
-    UE_LOG(LogTemp, Warning, TEXT("APS_LoadSaveManager::Save"));
+    if (!SaveGameObject)
+    {
+        SaveGameObject = Cast<UPS_SaveGame>(UGameplayStatics::CreateSaveGameObject(UPS_SaveGame::StaticClass()));
+    }
+
+    const ACharacter* Character = GetGameInstance()->GetPrimaryPlayerController()->GetCharacter();
+    if (!Character) return;
+
+    SaveGameObject->PlayerTransform = Character->GetRootComponent()->GetComponentTransform();
+    SaveGameObject->PlayerCurrentEnergy = Character->GetComponentByClass<UPS_EnergyComponent>()->GetCurrentEnergy();
+    
+    UGameplayStatics::SaveGameToSlot(SaveGameObject, "MainSlot", 0);
+    
+    UE_LOG(LogTemp, Warning, TEXT("Game saved!"));
 }
 
 void APS_LoadSaveManager::Load()
 {
-    // TODO: implement player character position loading 
-    UE_LOG(LogTemp, Warning, TEXT("APS_LoadSaveManager::Load"));
+    SaveGameObject = Cast<UPS_SaveGame>(UGameplayStatics::LoadGameFromSlot("MainSlot", 0));
+    if (!SaveGameObject) return;
+
+    const ACharacter* Character = GetGameInstance()->GetPrimaryPlayerController()->GetCharacter();
+    if (!Character) return;
+
+    Character->GetRootComponent()->SetWorldTransform(SaveGameObject->PlayerTransform);
+    if (UPS_EnergyComponent* EnergyComponent = Character->GetComponentByClass<UPS_EnergyComponent>())
+        EnergyComponent->SetCurrentEnergy(SaveGameObject->PlayerCurrentEnergy);
+    
+    UE_LOG(LogTemp, Warning, TEXT("Game Loaded!"));
 }
 
-// Called when the game starts or when spawned
 void APS_LoadSaveManager::BeginPlay()
 {
 	Super::BeginPlay();
+
+    FTimerHandle LoadingDelayHandle;
+    GetWorld()->GetTimerManager().SetTimer(LoadingDelayHandle, this, &ThisClass::Load, 0.01, false); // delay for spawn all actors
+
+    // Saving game every second
+    FTimerHandle ConstantSavingProcessHandle;
+    GetWorld()->GetTimerManager().SetTimer(ConstantSavingProcessHandle, this, &ThisClass::Save, 1, true); 
 }
 

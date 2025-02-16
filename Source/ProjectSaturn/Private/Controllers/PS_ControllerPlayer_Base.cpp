@@ -72,7 +72,7 @@ void APS_ControllerPlayer_Base::Interact()
 
 void APS_ControllerPlayer_Base::Save()
 {
-    UPS_GameInstance* GameInstance = Cast<UPS_GameInstance>(GetGameInstance());
+    const UPS_GameInstance* GameInstance = Cast<UPS_GameInstance>(GetGameInstance());
     if (!GameInstance) return;
 
     APS_LoadSaveManager* LoadSaveManager = GameInstance->GetLoadSaveManager();
@@ -83,7 +83,7 @@ void APS_ControllerPlayer_Base::Save()
 
 void APS_ControllerPlayer_Base::Load()
 {
-    UPS_GameInstance* GameInstance = Cast<UPS_GameInstance>(GetGameInstance());
+    const UPS_GameInstance* GameInstance = Cast<UPS_GameInstance>(GetGameInstance());
     if (!GameInstance) return;
     
     APS_LoadSaveManager* LoadSaveManager = GameInstance->GetLoadSaveManager();

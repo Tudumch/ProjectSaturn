@@ -22,7 +22,9 @@ public:
     void Load();
 
 protected:
-	// Called when the game starts or when spawned
+    UPROPERTY()
+    class UPS_SaveGame* SaveGameObject = nullptr;
+    
 	virtual void BeginPlay() override;
 
 };

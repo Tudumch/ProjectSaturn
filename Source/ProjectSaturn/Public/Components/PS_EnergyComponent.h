@@ -13,11 +13,12 @@ class PROJECTSATURN_API UPS_EnergyComponent : public UActorComponent
 	GENERATED_BODY()
 
 public:	
-	// Sets default values for this component's properties
 	UPS_EnergyComponent();
 
     UFUNCTION(BlueprintPure)
     float GetCurrentEnergy() const { return CurrentEnergy; };
+    UFUNCTION(BlueprintCallable)
+    void SetCurrentEnergy(const float Value) { CurrentEnergy = Value; };
     UFUNCTION(BlueprintCallable)
     void AddEnergy(const float Value);
     UFUNCTION(BlueprintCallable)
@@ -31,7 +32,6 @@ protected:
     UPROPERTY(EditAnywhere)
     float EnergyConsumptionDueToBeAwake = 0.01;
     
-	// Called when the game starts
 	virtual void BeginPlay() override;
 
     UFUNCTION()
