@@ -4,6 +4,7 @@
 #include "Systems/LoadSaveSystem/PS_LoadSaveManager.h"
 
 #include "Components/PS_EnergyComponent.h"
+#include "Components/PS_HealthComponent.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/SaveGame.h"
 #include "Kismet/GameplayStatics.h"
@@ -27,6 +28,7 @@ void APS_LoadSaveManager::Save()
 
     SaveGameObject->PlayerTransform = Character->GetRootComponent()->GetComponentTransform();
     SaveGameObject->PlayerCurrentEnergy = Character->GetComponentByClass<UPS_EnergyComponent>()->GetCurrentEnergy();
+    SaveGameObject->PlayerCurrentHealth = Character->GetComponentByClass<UPS_HealthComponent>()->GetCurrentHealth();
     
     UGameplayStatics::SaveGameToSlot(SaveGameObject, "MainSlot", 0);
     
@@ -42,8 +44,11 @@ void APS_LoadSaveManager::Load()
     if (!Character) return;
 
     Character->GetRootComponent()->SetWorldTransform(SaveGameObject->PlayerTransform);
+    
     if (UPS_EnergyComponent* EnergyComponent = Character->GetComponentByClass<UPS_EnergyComponent>())
         EnergyComponent->SetCurrentEnergy(SaveGameObject->PlayerCurrentEnergy);
+    if (UPS_HealthComponent* HealthComponent = Character->GetComponentByClass<UPS_HealthComponent>())
+        HealthComponent->SetCurrentHealth(SaveGameObject->PlayerCurrentHealth);
     
     UE_LOG(LogTemp, Warning, TEXT("Game Loaded!"));
 }

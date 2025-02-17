@@ -26,6 +26,8 @@ protected:
     UPROPERTY()
     class UPS_EnergyComponent* TargetEnergyComponent;
     UPROPERTY()
+    class UPS_HealthComponent* TargetHealthComponent;
+    UPROPERTY()
     FTimerHandle ChargeTickTimer;
 
     UFUNCTION(BlueprintCallable)

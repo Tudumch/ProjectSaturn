@@ -19,4 +19,6 @@ public:
     FTransform PlayerTransform;
     UPROPERTY(EditAnywhere)
     float PlayerCurrentEnergy;
+    UPROPERTY(EditAnywhere)
+    float PlayerCurrentHealth;
 };
