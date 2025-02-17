@@ -37,6 +37,8 @@ protected:
     class USphereComponent* InteractionRadius;
     UPROPERTY (EditAnywhere, BlueprintReadWrite)
     class UPS_EnergyComponent* EnergyComponent;
+    UPROPERTY (EditAnywhere, BlueprintReadWrite)
+    class UPS_HealthComponent* HealthComponent;
 
     UPROPERTY()
     class APS_Prop_Base* NearbyInteractableProp; // stores last overlapped interactable prop

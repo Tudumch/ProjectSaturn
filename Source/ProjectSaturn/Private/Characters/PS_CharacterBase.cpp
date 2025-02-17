@@ -9,6 +9,7 @@
 #include "Camera/CameraComponent.h"
 
 #include "Components/PS_EnergyComponent.h"
+#include "Components/PS_HealthComponent.h"
 #include "Components/SphereComponent.h"
 #include "Props/PS_Prop_Base.h"
 
@@ -22,6 +23,7 @@ APS_CharacterBase::APS_CharacterBase(const FObjectInitializer& ObjectInitializer
     InteractionRadius = CreateDefaultSubobject<USphereComponent>(TEXT("InteractionRadius"));
     InteractionRadius->SetSphereRadius(200);
     EnergyComponent = CreateDefaultSubobject<UPS_EnergyComponent>(TEXT("EnergyComponent"));
+    HealthComponent = CreateDefaultSubobject<UPS_HealthComponent>(TEXT("HealthComponent"));
 
     SpringArm->SetupAttachment(RootComponent);
     InteractionRadius->SetupAttachment(RootComponent);
