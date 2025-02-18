@@ -75,7 +75,8 @@ void APS_ControllerPlayer_Base::Save()
     const UPS_GameInstance* GameInstance = Cast<UPS_GameInstance>(GetGameInstance());
     if (!GameInstance) return;
 
-    APS_LoadSaveManager* LoadSaveManager = GameInstance->GetLoadSaveManager();
+    // APS_LoadSaveManager* LoadSaveManager = GameInstance->GetLoadSaveManager();
+    UPS_LoadSaveManager* LoadSaveManager = GameInstance->GetLoadSaveManager();
     if (!LoadSaveManager) return;
 
     LoadSaveManager->Save();
@@ -86,7 +87,8 @@ void APS_ControllerPlayer_Base::Load()
     const UPS_GameInstance* GameInstance = Cast<UPS_GameInstance>(GetGameInstance());
     if (!GameInstance) return;
     
-    APS_LoadSaveManager* LoadSaveManager = GameInstance->GetLoadSaveManager();
+    // APS_LoadSaveManager* LoadSaveManager = GameInstance->GetLoadSaveManager();
+    UPS_LoadSaveManager* LoadSaveManager = GameInstance->GetLoadSaveManager();
     if (!LoadSaveManager) return;
 
     LoadSaveManager->Load();

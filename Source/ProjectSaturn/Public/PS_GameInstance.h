@@ -17,11 +17,12 @@ class PROJECTSATURN_API UPS_GameInstance : public UGameInstance
 
 public:
     UFUNCTION(BlueprintPure)
-    APS_LoadSaveManager* GetLoadSaveManager() const { return LoadSaveManager; };
+    // APS_LoadSaveManager* GetLoadSaveManager() const { return LoadSaveManager; };
+    UPS_LoadSaveManager* GetLoadSaveManager() const { return LoadSaveManager; };
     
 protected:
     UPROPERTY()
-    APS_LoadSaveManager* LoadSaveManager;
+    UPS_LoadSaveManager* LoadSaveManager;
     
     virtual void Init() override;
 };

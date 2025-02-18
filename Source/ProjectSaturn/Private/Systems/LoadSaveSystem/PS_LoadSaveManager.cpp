@@ -10,20 +10,14 @@
 #include "Kismet/GameplayStatics.h"
 #include "Systems/LoadSaveSystem/PS_SaveGame.h"
 
-// Sets default values
-APS_LoadSaveManager::APS_LoadSaveManager()
-{
-	PrimaryActorTick.bCanEverTick = false;
-}
-
-void APS_LoadSaveManager::Save()
+void UPS_LoadSaveManager::Save()
 {
     if (!SaveGameObject)
     {
         SaveGameObject = Cast<UPS_SaveGame>(UGameplayStatics::CreateSaveGameObject(UPS_SaveGame::StaticClass()));
     }
 
-    const ACharacter* Character = GetGameInstance()->GetPrimaryPlayerController()->GetCharacter();
+    const ACharacter* Character = GetWorld()->GetGameInstance()->GetPrimaryPlayerController()->GetCharacter();
     if (!Character) return;
 
     SaveGameObject->PlayerTransform = Character->GetRootComponent()->GetComponentTransform();
@@ -35,12 +29,12 @@ void APS_LoadSaveManager::Save()
     UE_LOG(LogTemp, Warning, TEXT("Game saved!"));
 }
 
-void APS_LoadSaveManager::Load()
+void UPS_LoadSaveManager::Load()
 {
     SaveGameObject = Cast<UPS_SaveGame>(UGameplayStatics::LoadGameFromSlot("MainSlot", 0));
     if (!SaveGameObject) return;
 
-    const ACharacter* Character = GetGameInstance()->GetPrimaryPlayerController()->GetCharacter();
+    const ACharacter* Character = GetWorld()->GetGameInstance()->GetPrimaryPlayerController()->GetCharacter();
     if (!Character) return;
 
     Character->GetRootComponent()->SetWorldTransform(SaveGameObject->PlayerTransform);
@@ -53,10 +47,8 @@ void APS_LoadSaveManager::Load()
     UE_LOG(LogTemp, Warning, TEXT("Game Loaded!"));
 }
 
-void APS_LoadSaveManager::BeginPlay()
+void UPS_LoadSaveManager::InitializeSaveProcess()
 {
-	Super::BeginPlay();
-
     FTimerHandle LoadingDelayHandle;
     GetWorld()->GetTimerManager().SetTimer(LoadingDelayHandle, this, &ThisClass::Load, 0.01, false); // delay for spawn all actors
 
@@ -64,4 +56,3 @@ void APS_LoadSaveManager::BeginPlay()
     FTimerHandle ConstantSavingProcessHandle;
     GetWorld()->GetTimerManager().SetTimer(ConstantSavingProcessHandle, this, &ThisClass::Save, 1, true); 
 }
-

@@ -3,28 +3,27 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Actor.h"
 #include "PS_LoadSaveManager.generated.h"
 
+/**
+ * 
+ */
 UCLASS()
-class PROJECTSATURN_API APS_LoadSaveManager : public AActor
+class PROJECTSATURN_API UPS_LoadSaveManager : public UObject
 {
 	GENERATED_BODY()
-	
-public:	
-	// Sets default values for this actor's properties
-	APS_LoadSaveManager();
-
+    
+public:
     UFUNCTION(BlueprintCallable)
     void Save();
     
     UFUNCTION(BlueprintCallable)
     void Load();
+    
+    UFUNCTION(BlueprintCallable)
+    void InitializeSaveProcess();
 
 protected:
     UPROPERTY()
     class UPS_SaveGame* SaveGameObject = nullptr;
-    
-	virtual void BeginPlay() override;
-
 };

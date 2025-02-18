@@ -10,5 +10,6 @@ void UPS_GameInstance::Init()
 {
     Super::Init();
     
-    LoadSaveManager = GetWorld()->SpawnActor<APS_LoadSaveManager>();
+    LoadSaveManager = NewObject<UPS_LoadSaveManager>(this, UPS_LoadSaveManager::StaticClass(), NAME_None, RF_Standalone);
+    LoadSaveManager->InitializeSaveProcess(); // TODO: how to restart the save-timer when the level changes?
 }
