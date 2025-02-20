@@ -7,6 +7,8 @@
 #include "PS_EnergyComponent.generated.h"
 
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnZeroEnergy);
+
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class PROJECTSATURN_API UPS_EnergyComponent : public UActorComponent
 {
@@ -22,7 +24,10 @@ public:
     UFUNCTION(BlueprintCallable)
     void AddEnergy(const float Value);
     UFUNCTION(BlueprintCallable)
-    void ConsumeEnergy(const float Value) { CurrentEnergy -= Value; };
+    void ConsumeEnergy(const float Value);
+    
+    UPROPERTY(BlueprintAssignable)
+    FOnZeroEnergy OnZeroEnergy;
 
 protected:
     UPROPERTY()

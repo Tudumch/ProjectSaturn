@@ -14,6 +14,14 @@ UPS_EnergyComponent::UPS_EnergyComponent()
 void UPS_EnergyComponent::AddEnergy(const float Value)
 {
     CurrentEnergy = FMath::Clamp(CurrentEnergy + Value, 0.f, MaxEnergy);
+
+    if (CurrentEnergy <= 0)
+        OnZeroEnergy.Broadcast();
+}
+
+void UPS_EnergyComponent::ConsumeEnergy(const float Value)
+{
+    AddEnergy(-Value);
 }
 
 

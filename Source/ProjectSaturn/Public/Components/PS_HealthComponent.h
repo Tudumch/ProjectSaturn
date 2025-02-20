@@ -6,6 +6,7 @@
 #include "Components/ActorComponent.h"
 #include "PS_HealthComponent.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnZeroHealth);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class PROJECTSATURN_API UPS_HealthComponent : public UActorComponent
@@ -15,6 +16,9 @@ class PROJECTSATURN_API UPS_HealthComponent : public UActorComponent
 public:	
 	// Sets default values for this component's properties
 	UPS_HealthComponent();
+    
+    UPROPERTY(BlueprintAssignable)
+    FOnZeroHealth OnZeroHealth;
 
     UFUNCTION(BlueprintPure)
     float GetCurrentHealth() const { return CurrentHealth; };
