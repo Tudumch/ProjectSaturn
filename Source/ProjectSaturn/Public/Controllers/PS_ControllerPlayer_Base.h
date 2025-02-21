@@ -21,6 +21,8 @@ protected:
     UPROPERTY()
     class APS_CharacterBase* PS_CharacterBase;
     UPROPERTY()
+    class APS_GameModeBase* GameModeBase;
+    UPROPERTY()
     class UPS_CharacterMovementComponent* PS_CharacterMovementComponent;
 
      UPROPERTY (EditAnywhere, Category = "Input")

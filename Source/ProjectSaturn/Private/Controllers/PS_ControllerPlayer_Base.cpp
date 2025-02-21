@@ -8,7 +8,7 @@
 
 #include "Characters/PS_CharacterBase.h"
 #include "Components/PS_CharacterMovementComponent.h"
-#include "PS_GameInstance.h"
+#include "PS_GameModeBase.h"
 #include "Components/PS_EnergyComponent.h"
 #include "Components/PS_HealthComponent.h"
 #include "Systems/LoadSaveSystem/PS_LoadSaveManager.h"
@@ -77,10 +77,9 @@ void APS_ControllerPlayer_Base::Interact()
 
 void APS_ControllerPlayer_Base::Save()
 {
-    const UPS_GameInstance* GameInstance = Cast<UPS_GameInstance>(GetGameInstance());
-    if (!GameInstance) return;
+    if (!GameModeBase) return;
 
-    UPS_LoadSaveManager* LoadSaveManager = GameInstance->GetLoadSaveManager();
+    UPS_LoadSaveManager* LoadSaveManager = GameModeBase->GetLoadSaveManager();
     if (!LoadSaveManager) return;
 
     LoadSaveManager->Save();
@@ -88,10 +87,9 @@ void APS_ControllerPlayer_Base::Save()
 
 void APS_ControllerPlayer_Base::Load()
 {
-    const UPS_GameInstance* GameInstance = Cast<UPS_GameInstance>(GetGameInstance());
-    if (!GameInstance) return;
+    if (!GameModeBase) return;
     
-    UPS_LoadSaveManager* LoadSaveManager = GameInstance->GetLoadSaveManager();
+    UPS_LoadSaveManager* LoadSaveManager = GameModeBase->GetLoadSaveManager();
     if (!LoadSaveManager) return;
 
     LoadSaveManager->Load();
@@ -106,6 +104,7 @@ void APS_ControllerPlayer_Base::DebugAddHPEnergy(const FInputActionValue& Value)
 
 void APS_ControllerPlayer_Base::DefineCoreVariables()
 {
+    GameModeBase = Cast<APS_GameModeBase>(GetWorld()->GetAuthGameMode());
     PS_CharacterBase = Cast<APS_CharacterBase>(GetPawn());
     if (!PS_CharacterBase) return;
     
