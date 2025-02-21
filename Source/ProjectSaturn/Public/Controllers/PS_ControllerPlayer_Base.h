@@ -57,6 +57,14 @@ protected:
     UFUNCTION(BlueprintCallable, Category = "Input")
     virtual void Load();
 
+    // Debug cheats
+    UPROPERTY (EditAnywhere, Category = "Input")
+    UInputAction* DebugAddHPEnergyIA;
+    
+    // Increase and decrease HP and Energy. Bound to "+" and "-" hotkeys
+    UFUNCTION(BlueprintCallable, Category = "Input")
+    virtual void DebugAddHPEnergy(const FInputActionValue& Value); 
+
 private:
     void DefineCoreVariables();
 

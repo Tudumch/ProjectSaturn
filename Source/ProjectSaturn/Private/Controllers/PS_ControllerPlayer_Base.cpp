@@ -9,6 +9,8 @@
 #include "Characters/PS_CharacterBase.h"
 #include "Components/PS_CharacterMovementComponent.h"
 #include "PS_GameInstance.h"
+#include "Components/PS_EnergyComponent.h"
+#include "Components/PS_HealthComponent.h"
 #include "Systems/LoadSaveSystem/PS_LoadSaveManager.h"
 
 
@@ -41,6 +43,9 @@ void APS_ControllerPlayer_Base::SetupInputComponent()
     EnhancedInputComponent->BindAction(InteractIA, ETriggerEvent::Started, this, &ThisClass::Interact);
     EnhancedInputComponent->BindAction(SaveIA, ETriggerEvent::Started, this, &ThisClass::Save);
     EnhancedInputComponent->BindAction(LoadIA, ETriggerEvent::Started, this, &ThisClass::Load);
+
+    // Debug IAs
+    EnhancedInputComponent->BindAction(DebugAddHPEnergyIA, ETriggerEvent::Triggered, this, &ThisClass::DebugAddHPEnergy);
 }
 
 void APS_ControllerPlayer_Base::Look(const FInputActionValue& Value)
@@ -75,7 +80,6 @@ void APS_ControllerPlayer_Base::Save()
     const UPS_GameInstance* GameInstance = Cast<UPS_GameInstance>(GetGameInstance());
     if (!GameInstance) return;
 
-    // APS_LoadSaveManager* LoadSaveManager = GameInstance->GetLoadSaveManager();
     UPS_LoadSaveManager* LoadSaveManager = GameInstance->GetLoadSaveManager();
     if (!LoadSaveManager) return;
 
@@ -87,11 +91,17 @@ void APS_ControllerPlayer_Base::Load()
     const UPS_GameInstance* GameInstance = Cast<UPS_GameInstance>(GetGameInstance());
     if (!GameInstance) return;
     
-    // APS_LoadSaveManager* LoadSaveManager = GameInstance->GetLoadSaveManager();
     UPS_LoadSaveManager* LoadSaveManager = GameInstance->GetLoadSaveManager();
     if (!LoadSaveManager) return;
 
     LoadSaveManager->Load();
+}
+
+void APS_ControllerPlayer_Base::DebugAddHPEnergy(const FInputActionValue& Value)
+{
+    float InputValue = Value.Get<FVector>().X;
+    PS_CharacterBase->GetComponentByClass<UPS_HealthComponent>()->AddHealth(InputValue);
+    PS_CharacterBase->GetComponentByClass<UPS_EnergyComponent>()->AddEnergy(InputValue);
 }
 
 void APS_ControllerPlayer_Base::DefineCoreVariables()
