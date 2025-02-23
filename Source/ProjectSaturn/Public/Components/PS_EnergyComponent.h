@@ -21,6 +21,9 @@ public:
     float GetCurrentEnergy() const { return CurrentEnergy; };
     UFUNCTION(BlueprintCallable)
     void SetCurrentEnergy(const float Value) { CurrentEnergy = Value; };
+    // Set current energy to max energy
+    UFUNCTION(BlueprintCallable)
+    void ResetEnergy() { CurrentEnergy = MaxEnergy; };
     UFUNCTION(BlueprintCallable)
     void AddEnergy(const float Value);
     UFUNCTION(BlueprintCallable)

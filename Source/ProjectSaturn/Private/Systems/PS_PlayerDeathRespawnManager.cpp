@@ -3,17 +3,25 @@
 
 #include "Systems/PS_PlayerDeathRespawnManager.h"
 
+#include "Characters/PS_CharacterBase.h"
+#include "Components/PS_EnergyComponent.h"
+#include "Components/PS_HealthComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Props/PS_Prop_RechargingCapsule.h"
 
 void UPS_PlayerDeathRespawnManager::RespawnPlayer(APlayerController* &PlayerController)
 {
-    TArray<AActor*> FoundActors;
-    UGameplayStatics::GetAllActorsOfClass(this, APS_Prop_RechargingCapsule::StaticClass(), FoundActors);
-    if (FoundActors.Num() == 0) return;
+    if (!PlayerController) return;
     
+    TArray<AActor*> RechargingCapsules;
+    UGameplayStatics::GetAllActorsOfClass(this, APS_Prop_RechargingCapsule::StaticClass(), RechargingCapsules);
+    if (RechargingCapsules.Num() == 0) return;
+    const APS_Prop_RechargingCapsule* RechargingCapsule = Cast<APS_Prop_RechargingCapsule>(RechargingCapsules[0]);
     
-    // FTransform RespawnTransform = FoundActors[0]->GetTransform();
-    // ACharacter* Character = GetWorld()->SpawnActor<APS_CharacterBase>(APS_CharacterBase::StaticClass(), RespawnTransform);
-    // PlayerController->Possess(Character);
+    const ACharacter* Character = PlayerController->GetCharacter();
+    if (Character == nullptr) return;
+    
+    Character->GetRootComponent()->SetWorldTransform(RechargingCapsule->GetAnimInteractionPointTransforms());
+    Character->GetComponentByClass<UPS_HealthComponent>()->ResetHealth();
+    Character->GetComponentByClass<UPS_EnergyComponent>()->ResetEnergy();
 }

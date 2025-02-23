@@ -24,6 +24,9 @@ public:
     float GetCurrentHealth() const { return CurrentHealth; };
     UFUNCTION(BlueprintCallable)
     void SetCurrentHealth(const float Value) { CurrentHealth = Value; };
+    // Set current health to max health
+    UFUNCTION(BlueprintCallable)
+    void ResetHealth() { CurrentHealth = MaxHealth; };
     UFUNCTION(BlueprintCallable)
     void AddHealth(const float Value);
     

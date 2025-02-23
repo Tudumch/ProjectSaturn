@@ -32,7 +32,11 @@ void UPS_CharacterMovementComponent::Move(const FInputActionValue& Value)
 
 void UPS_CharacterMovementComponent::Look(const FInputActionValue& Value)
 {
-    if (!PlayerController) return;
+    if (!PlayerController)
+    {
+        PlayerController = Cast<APlayerController>(GetController());
+        if (!PlayerController) return;
+    }
     
     const FVector2D LookAxisValue = Value.Get<FVector2D>();
     
@@ -51,7 +55,7 @@ void UPS_CharacterMovementComponent::BeginPlay()
     Super::BeginPlay();
 
     PlayerController = Cast<APlayerController>(GetController());
-    OwnerCharacter = Cast<APS_CharacterBase>(PlayerController->GetPawn());
+    OwnerCharacter = Cast<APS_CharacterBase>(GetOwner());
     EnergyComponent = OwnerCharacter->FindComponentByClass<UPS_EnergyComponent>();
     MaxWalkSpeedCached = MaxWalkSpeed;
 }

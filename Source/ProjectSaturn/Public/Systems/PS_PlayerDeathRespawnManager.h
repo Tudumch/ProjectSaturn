@@ -3,12 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "UObject/NoExportTypes.h"
 #include "PS_PlayerDeathRespawnManager.generated.h"
 
-/**
- * 
- */
 UCLASS()
 class PROJECTSATURN_API UPS_PlayerDeathRespawnManager : public UObject
 {

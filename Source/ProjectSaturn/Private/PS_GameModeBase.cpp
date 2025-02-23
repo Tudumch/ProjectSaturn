@@ -10,9 +10,10 @@
 void APS_GameModeBase::BeginPlay()
 {
     Super::BeginPlay();
-    
-    LoadSaveManager = NewObject<UPS_LoadSaveManager>(this, UPS_LoadSaveManager::StaticClass());
-    LoadSaveManager->InitializeSaveProcess();
+
+    // TODO: Save system temporary disabled until respawn-system will be completed
+    // LoadSaveManager = NewObject<UPS_LoadSaveManager>(this, UPS_LoadSaveManager::StaticClass());
+    // LoadSaveManager->InitializeSaveProcess();
     
     DeathRespawnManager = NewObject<UPS_PlayerDeathRespawnManager>(this, UPS_PlayerDeathRespawnManager::StaticClass());
     APlayerController* PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
