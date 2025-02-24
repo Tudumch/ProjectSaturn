@@ -43,15 +43,23 @@ void APS_CharacterBase::BeginPlay()
 void APS_CharacterBase::OnInteractionRadiusOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
     UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+    if (OtherActor == this) return;
+    
     NearbyInteractableProp = Cast<APS_Prop_Base>(OtherActor);
-    if (NearbyInteractableProp) NearbyInteractableProp->ShowTooltip(true);
+    if (NearbyInteractableProp)
+        NearbyInteractableProp->ShowTooltip(true);
 }
 
 void APS_CharacterBase::OnInteractionRadiusOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
     UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-    if (NearbyInteractableProp) NearbyInteractableProp->ShowTooltip(false);
-    NearbyInteractableProp = nullptr;
+    if (OtherActor == this) return;
+    
+    if (OtherActor == NearbyInteractableProp)
+    {
+        NearbyInteractableProp->ShowTooltip(false);
+        NearbyInteractableProp = nullptr;
+    }
 }
 
 // ----------------------------
@@ -61,6 +69,13 @@ void APS_CharacterBase::Interact()
     if (!NearbyInteractableProp) return;
 
     bIsInteracting ? EndInteraction() : StartInteraction();
+}
+
+void APS_CharacterBase::StartRespawnSequence()
+{
+    bIsInteracting = true;
+    FTimerHandle RespawnDelayTimer; // timer is used to wait for the character AnimInstance loading
+    GetWorld()->GetTimerManager().SetTimer(RespawnDelayTimer, this, &ThisClass::EndInteraction, 0.01, false);
 }
 
 void APS_CharacterBase::StartInteraction()
@@ -78,6 +93,12 @@ void APS_CharacterBase::StartInteraction()
 
 void APS_CharacterBase::EndInteraction()
 {
+    if (!NearbyInteractableProp)
+    {
+        bIsInteracting = false;
+        return;
+    }
+    
     NearbyInteractableProp->StopInteract();
     
     if (!AnimInstance) return;

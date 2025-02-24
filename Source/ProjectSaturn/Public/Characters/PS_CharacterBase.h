@@ -6,6 +6,8 @@
 #include "GameFramework/Character.h"
 #include "PS_CharacterBase.generated.h"
 
+class APS_Prop_Base;
+class APS_Prop_RechargingCapsule;
 /**
  * 
  */
@@ -19,6 +21,10 @@ public:
 
     UFUNCTION(BlueprintCallable)
     void Interact();
+
+    // Imitates ending of interaction process with prop. Is used when the player respawns.
+    UFUNCTION(BlueprintCallable)
+    void StartRespawnSequence();
 
     UFUNCTION(BlueprintPure)
     bool IsInteracting() const { return bIsInteracting; } 

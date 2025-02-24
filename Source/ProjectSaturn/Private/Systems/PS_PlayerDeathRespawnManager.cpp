@@ -18,10 +18,12 @@ void UPS_PlayerDeathRespawnManager::RespawnPlayer(APlayerController* &PlayerCont
     if (RechargingCapsules.Num() == 0) return;
     const APS_Prop_RechargingCapsule* RechargingCapsule = Cast<APS_Prop_RechargingCapsule>(RechargingCapsules[0]);
     
-    const ACharacter* Character = PlayerController->GetCharacter();
+    APS_CharacterBase* Character = Cast<APS_CharacterBase>(PlayerController->GetCharacter());
     if (Character == nullptr) return;
     
-    Character->GetRootComponent()->SetWorldTransform(RechargingCapsule->GetAnimInteractionPointTransforms());
+    Character->GetRootComponent()->SetWorldTransform(RechargingCapsule->GetAnimInteractionPointTransforms(), false, nullptr, ETeleportType::TeleportPhysics);
     Character->GetComponentByClass<UPS_HealthComponent>()->ResetHealth();
     Character->GetComponentByClass<UPS_EnergyComponent>()->ResetEnergy();
+    Character->StartRespawnSequence();
+
 }
