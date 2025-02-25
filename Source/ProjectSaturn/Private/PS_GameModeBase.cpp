@@ -17,5 +17,5 @@ void APS_GameModeBase::BeginPlay()
     
     DeathRespawnManager = NewObject<UPS_PlayerDeathRespawnManager>(this, UPS_PlayerDeathRespawnManager::StaticClass());
     APlayerController* PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
-    DeathRespawnManager->RespawnPlayer(PlayerController);
+    DeathRespawnManager->SpawnPlayer(PlayerController);
 }

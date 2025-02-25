@@ -78,6 +78,17 @@ void APS_CharacterBase::StartRespawnSequence()
     GetWorld()->GetTimerManager().SetTimer(RespawnDelayTimer, this, &ThisClass::EndInteraction, 0.01, false);
 }
 
+float APS_CharacterBase::StartDeathSequence()
+{
+    bIsInteracting = true;
+    
+    if (!DeathAnimation)
+        UE_LOG(LogTemp, Warning, TEXT("%s: death animation doesn't set!"), *GetName());
+    
+    float SequenceLength = AnimInstance->Montage_Play(DeathAnimation);
+    return SequenceLength;
+}
+
 void APS_CharacterBase::StartInteraction()
 {
     bIsInteracting = true;

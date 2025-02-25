@@ -6,7 +6,7 @@
 #include "Components/ActorComponent.h"
 #include "PS_HealthComponent.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnZeroHealth);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnZeroHealth, class AActor*, Actor);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class PROJECTSATURN_API UPS_HealthComponent : public UActorComponent

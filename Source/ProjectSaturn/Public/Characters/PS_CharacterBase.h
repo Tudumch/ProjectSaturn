@@ -26,14 +26,16 @@ public:
     UFUNCTION(BlueprintCallable)
     void StartRespawnSequence();
 
+    // Plays Death AnimMontage and returns its length.
+    UFUNCTION(BlueprintCallable)
+    float StartDeathSequence();
+
     UFUNCTION(BlueprintPure)
     bool IsInteracting() const { return bIsInteracting; } 
 
 protected:
-    UPROPERTY()
-    APlayerController* PlayerController;
-
-
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations")
+    UAnimMontage* DeathAnimation;
 
     UPROPERTY (EditAnywhere, BlueprintReadWrite)
     class USpringArmComponent* SpringArm;
@@ -47,7 +49,7 @@ protected:
     class UPS_HealthComponent* HealthComponent;
 
     UPROPERTY()
-    class APS_Prop_Base* NearbyInteractableProp; // stores last overlapped interactable prop
+    APS_Prop_Base* NearbyInteractableProp; // stores last overlapped interactable prop
     UPROPERTY(BlueprintReadWrite)
     class UPS_AnimInstance* AnimInstance;
     UPROPERTY(EditAnywhere, BlueprintReadWrite)

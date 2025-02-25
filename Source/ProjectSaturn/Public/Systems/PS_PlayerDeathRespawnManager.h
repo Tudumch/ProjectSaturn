@@ -11,6 +11,18 @@ class PROJECTSATURN_API UPS_PlayerDeathRespawnManager : public UObject
 	GENERATED_BODY()
 
 public:
+    // Spawns player for the first time.
     UFUNCTION(BlueprintCallable)
-    void RespawnPlayer(APlayerController* &PlayerController);
+    void SpawnPlayer(APlayerController* PlayerController);
+
+    // Respawns already existing player.
+    UFUNCTION(BlueprintCallable)
+    void RespawnPlayer(APlayerController* PlayerController);
+
+protected:
+    UFUNCTION(BlueprintCallable)
+    void OnZeroHealthEnergy(AActor* Actor);
 };
+
+
+

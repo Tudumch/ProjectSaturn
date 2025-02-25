@@ -7,7 +7,7 @@
 #include "PS_EnergyComponent.generated.h"
 
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnZeroEnergy);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnZeroEnergy, class AActor*, Actor);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class PROJECTSATURN_API UPS_EnergyComponent : public UActorComponent

@@ -11,10 +11,12 @@ UPS_HealthComponent::UPS_HealthComponent()
 
 void UPS_HealthComponent::AddHealth(const float Value)
 {
+    if (CurrentHealth <= 0) return;
+    
     CurrentHealth = FMath::Clamp(CurrentHealth+ Value, 0.f, MaxHealth);
 
     if (CurrentHealth <= 0.f)
-        OnZeroHealth.Broadcast();
+        OnZeroHealth.Broadcast(GetOwner());
 }
 
 
