@@ -10,11 +10,13 @@
 
 #include "Components/PS_EnergyComponent.h"
 #include "Components/PS_HealthComponent.h"
+#include "Components/PS_WeaponComponent.h"
 #include "Components/SphereComponent.h"
 #include "Props/PS_Prop_Base.h"
 
 APS_CharacterBase::APS_CharacterBase(const FObjectInitializer& ObjectInitializer)
-: Super(ObjectInitializer.SetDefaultSubobjectClass<UPS_CharacterMovementComponent>(ACharacter::CharacterMovementComponentName))
+    : Super(ObjectInitializer.SetDefaultSubobjectClass<UPS_CharacterMovementComponent>(
+        ACharacter::CharacterMovementComponentName))
 {
     PrimaryActorTick.bCanEverTick = false;
 
@@ -24,6 +26,7 @@ APS_CharacterBase::APS_CharacterBase(const FObjectInitializer& ObjectInitializer
     InteractionRadius->SetSphereRadius(200);
     EnergyComponent = CreateDefaultSubobject<UPS_EnergyComponent>(TEXT("EnergyComponent"));
     HealthComponent = CreateDefaultSubobject<UPS_HealthComponent>(TEXT("HealthComponent"));
+    WeaponComponent = CreateDefaultSubobject<UPS_WeaponComponent>(TEXT("WeaponComponent"));
 
     SpringArm->SetupAttachment(RootComponent);
     InteractionRadius->SetupAttachment(RootComponent);
@@ -44,7 +47,7 @@ void APS_CharacterBase::OnInteractionRadiusOverlapBegin(UPrimitiveComponent* Ove
     UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
     if (OtherActor == this) return;
-    
+
     NearbyInteractableProp = Cast<APS_Prop_Base>(OtherActor);
     if (NearbyInteractableProp)
         NearbyInteractableProp->ShowTooltip(true);
@@ -54,7 +57,7 @@ void APS_CharacterBase::OnInteractionRadiusOverlapEnd(UPrimitiveComponent* Overl
     UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
     if (OtherActor == this) return;
-    
+
     if (OtherActor == NearbyInteractableProp)
     {
         NearbyInteractableProp->ShowTooltip(false);
@@ -81,10 +84,10 @@ void APS_CharacterBase::StartRespawnSequence()
 float APS_CharacterBase::StartDeathSequence()
 {
     bIsInteracting = true;
-    
+
     if (!DeathAnimation)
         UE_LOG(LogTemp, Warning, TEXT("%s: death animation doesn't set!"), *GetName());
-    
+
     float SequenceLength = AnimInstance->Montage_Play(DeathAnimation);
     return SequenceLength;
 }
@@ -92,11 +95,13 @@ float APS_CharacterBase::StartDeathSequence()
 void APS_CharacterBase::StartInteraction()
 {
     bIsInteracting = true;
-    
+
     if (!AnimInstance) return;
     float MontageDuration = AnimInstance->StartInteractionWithProp(NearbyInteractableProp);
-    GetWorld()->GetTimerManager().SetTimer(MontageDurationTimer, this, &ThisClass::OnFinishPlayStartingAnimMontage, MontageDuration, false);
     
+    GetWorld()->GetTimerManager().SetTimer(MontageDurationTimer, this, &ThisClass::OnFinishPlayStartingAnimMontage,
+        MontageDuration, false);
+
     const FTransform PropInteractionPoint = NearbyInteractableProp->GetAnimInteractionPointTransforms();
     this->SetActorLocation(PropInteractionPoint.GetLocation());
     this->SetActorRotation(PropInteractionPoint.GetRotation());
@@ -109,12 +114,14 @@ void APS_CharacterBase::EndInteraction()
         bIsInteracting = false;
         return;
     }
-    
+
     NearbyInteractableProp->StopInteract();
-    
+
     if (!AnimInstance) return;
     float MontageDuration = AnimInstance->EndInteractionWithProp(NearbyInteractableProp);
-    GetWorld()->GetTimerManager().SetTimer(MontageDurationTimer, this, &ThisClass::OnFinishPlayEndingAnimMontage, MontageDuration, false);
+    
+    GetWorld()->GetTimerManager().SetTimer(MontageDurationTimer, this, &ThisClass::OnFinishPlayEndingAnimMontage,
+        MontageDuration, false);
 }
 
 void APS_CharacterBase::OnFinishPlayStartingAnimMontage()

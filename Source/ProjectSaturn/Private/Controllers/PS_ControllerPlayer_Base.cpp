@@ -11,6 +11,7 @@
 #include "PS_GameModeBase.h"
 #include "Components/PS_EnergyComponent.h"
 #include "Components/PS_HealthComponent.h"
+#include "Components/PS_WeaponComponent.h"
 #include "Systems/LoadSaveSystem/PS_LoadSaveManager.h"
 
 
@@ -27,7 +28,7 @@ void APS_ControllerPlayer_Base::SetupInputComponent()
 
     // MappingContext setup
     if (UEnhancedInputLocalPlayerSubsystem* EnhancedInputSubSystem =
-            ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer()))
+        ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer()))
     {
         EnhancedInputSubSystem->AddMappingContext(InputMappingContext, 2);
     }
@@ -41,11 +42,14 @@ void APS_ControllerPlayer_Base::SetupInputComponent()
     EnhancedInputComponent->BindAction(LookIA, ETriggerEvent::Triggered, this, &ThisClass::Look);
     EnhancedInputComponent->BindAction(RunIA, ETriggerEvent::Started, this, &ThisClass::ToggleRun);
     EnhancedInputComponent->BindAction(InteractIA, ETriggerEvent::Started, this, &ThisClass::Interact);
+    EnhancedInputComponent->BindAction(AttackBaseIA, ETriggerEvent::Started, this, &ThisClass::AttackBasePressed);
+    EnhancedInputComponent->BindAction(AttackBaseIA, ETriggerEvent::Started, this, &ThisClass::AttackBaseReleased);
     EnhancedInputComponent->BindAction(SaveIA, ETriggerEvent::Started, this, &ThisClass::Save);
     EnhancedInputComponent->BindAction(LoadIA, ETriggerEvent::Started, this, &ThisClass::Load);
 
     // Debug IAs
-    EnhancedInputComponent->BindAction(DebugAddHPEnergyIA, ETriggerEvent::Triggered, this, &ThisClass::DebugAddHPEnergy);
+    EnhancedInputComponent->BindAction(DebugAddHPEnergyIA, ETriggerEvent::Triggered, this,
+        &ThisClass::DebugAddHPEnergy);
 }
 
 void APS_ControllerPlayer_Base::Look(const FInputActionValue& Value)
@@ -57,14 +61,14 @@ void APS_ControllerPlayer_Base::Look(const FInputActionValue& Value)
 
 void APS_ControllerPlayer_Base::Move(const FInputActionValue& Value)
 {
-    if (!PS_CharacterMovementComponent ) return;
+    if (!PS_CharacterMovementComponent) return;
 
     PS_CharacterMovementComponent->Move(Value);
 }
 
 void APS_ControllerPlayer_Base::ToggleRun()
 {
-    if (!PS_CharacterMovementComponent ) return;
+    if (!PS_CharacterMovementComponent) return;
 
     PS_CharacterMovementComponent->Run();
 }
@@ -73,6 +77,18 @@ void APS_ControllerPlayer_Base::Interact()
 {
     if (!PS_CharacterBase) return;
     PS_CharacterBase->Interact();
+}
+
+void APS_ControllerPlayer_Base::AttackBasePressed()
+{
+    if (!WeaponComponent) return;
+    WeaponComponent->AttackBaseOnPressed();
+}
+
+void APS_ControllerPlayer_Base::AttackBaseReleased()
+{
+    if (!WeaponComponent) return;
+    WeaponComponent->AttackBaseOnReleased();
 }
 
 void APS_ControllerPlayer_Base::Save()
@@ -88,7 +104,7 @@ void APS_ControllerPlayer_Base::Save()
 void APS_ControllerPlayer_Base::Load()
 {
     if (!GameModeBase) return;
-    
+
     UPS_LoadSaveManager* LoadSaveManager = GameModeBase->GetLoadSaveManager();
     if (!LoadSaveManager) return;
 
@@ -107,6 +123,7 @@ void APS_ControllerPlayer_Base::DefineCoreVariables()
     GameModeBase = Cast<APS_GameModeBase>(GetWorld()->GetAuthGameMode());
     PS_CharacterBase = Cast<APS_CharacterBase>(GetPawn());
     if (!PS_CharacterBase) return;
-    
+
     PS_CharacterMovementComponent = PS_CharacterBase->FindComponentByClass<UPS_CharacterMovementComponent>();
+    WeaponComponent = PS_CharacterBase->FindComponentByClass<UPS_WeaponComponent>();
 }
