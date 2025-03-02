@@ -81,7 +81,7 @@ void APS_ControllerPlayer_Base::Interact()
 
 void APS_ControllerPlayer_Base::AttackBasePressed()
 {
-    if (!WeaponComponent) return;
+    if (!WeaponComponent || PS_CharacterBase->IsInteracting()) return;
     WeaponComponent->AttackBaseOnPressed();
 }
 

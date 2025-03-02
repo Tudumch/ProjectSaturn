@@ -22,7 +22,20 @@ public:
 
 protected:
     UPROPERTY(BlueprintReadWrite)
+    bool bIsAttacking = false;
+
+    UPROPERTY(BlueprintReadWrite)
+    class APS_WeaponBase* ActiveWeapon = nullptr;
+    UPROPERTY(BlueprintReadWrite)
     class UPS_AnimInstance* AnimInstance = nullptr;
+
+    UPROPERTY(EditDefaultsOnly, Category = "Weapon")
+    FName WeaponSocketRightName = TEXT("WeaponSocket_R");
+    UPROPERTY(EditDefaultsOnly, Category = "Weapon")
+    FName WeaponSocketLeftName = TEXT("WeaponSocket_L");
+
+    UPROPERTY(EditDefaultsOnly, Category= "Weapon")
+    TSubclassOf<APS_WeaponBase> InitialWeaponClass;
 
     virtual void BeginPlay() override;
 
