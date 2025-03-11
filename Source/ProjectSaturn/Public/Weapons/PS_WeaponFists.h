@@ -17,17 +17,24 @@ public:
 
 protected:
     UPROPERTY(EditAnywhere)
-    FName HandSocketLeftName = TEXT("WeaponSocket_L");
+    bool bDrawDebugSpheres = true;
     UPROPERTY(EditAnywhere)
-    FName HandSocketRightName = TEXT("WeaponSocket_R");
+    FName HandSocketNameLeft = TEXT("WeaponSocket_L");
+    UPROPERTY(EditAnywhere)
+    FName HandSocketNameRight = TEXT("WeaponSocket_R");
     UPROPERTY(EditAnywhere)
     float FistCollisionRadius = 25.f;
+    UPROPERTY()
+    bool bHasCollisionReachedTarget = false; // prevents multiple fist-collision activation
 
     UPROPERTY()
     FTimerHandle CollisionSpawnTimer;
 
     UFUNCTION(BlueprintCallable)
-    void OnCollisionSpawn();
+    void SpawnFistsCollision();
+
+    UFUNCTION(BlueprintCallable)
+    void DrawDebugSpheres();
 
     virtual void BeginPlay() override;
 

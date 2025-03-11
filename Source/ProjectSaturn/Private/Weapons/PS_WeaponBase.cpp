@@ -3,11 +3,12 @@
 
 #include "Weapons/PS_WeaponBase.h"
 
-// Sets default values
+#include "Components/PS_HealthComponent.h"
+#include "GameFramework/Character.h"
+
 APS_WeaponBase::APS_WeaponBase()
 {
     PrimaryActorTick.bCanEverTick = false;
-
 }
 
 void APS_WeaponBase::StopFire()
@@ -28,4 +29,19 @@ float APS_WeaponBase::StartFire()
 void APS_WeaponBase::BeginPlay()
 {
     Super::BeginPlay();
+
+    GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ThisClass::OnSecondTick);
+}
+
+void APS_WeaponBase::ApplyDamageToActor(AActor*& Actor, const float Damage)
+{
+    if (!Actor) return;
+    if (UPS_HealthComponent* HealthComp = Actor->GetComponentByClass<UPS_HealthComponent>())
+        HealthComp->AddHealth(-Damage);
+}
+
+void APS_WeaponBase::OnSecondTick()
+{
+    if (const ACharacter* Character = Cast<ACharacter>(GetOwner()))
+        OwnerMeshComponent = Character->GetMesh();
 }

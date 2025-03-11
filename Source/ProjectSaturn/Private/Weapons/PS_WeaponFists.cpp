@@ -2,37 +2,67 @@
 
 
 #include "Weapons/PS_WeaponFists.h"
-
 #include "KismetTraceUtils.h"
-#include "GameFramework/Character.h"
 
 float APS_WeaponFists::StartFire()
 {
-    GetWorld()->GetTimerManager().SetTimer(CollisionSpawnTimer, this, &ThisClass::OnCollisionSpawn, 0.1f, true);
+    GetWorld()->GetTimerManager().SetTimer(CollisionSpawnTimer, this, &ThisClass::SpawnFistsCollision, 0.1f, true);
     return Super::StartFire();
 }
 
 void APS_WeaponFists::StopFire()
 {
     Super::StopFire();
+    bHasCollisionReachedTarget = false;
     GetWorld()->GetTimerManager().ClearTimer(CollisionSpawnTimer);
 }
 
-void APS_WeaponFists::OnCollisionSpawn()
+void APS_WeaponFists::SpawnFistsCollision()
 {
-    const ACharacter* Character = Cast<ACharacter>(GetOwner());
-    if (!Character) return;
+    if (bHasCollisionReachedTarget || !OwnerMeshComponent) return;
 
-    const UMeshComponent* Mesh = Character->GetMesh();
-    if (!Mesh) return;
+    FCollisionQueryParams CollisionParams;
+    CollisionParams.AddIgnoredActor(GetOwner());
 
-    // TODO: need to replace the debug trace with a real collision detector.
+    FHitResult HitResult;
+
+    GetWorld()->SweepSingleByChannel(HitResult, OwnerMeshComponent->GetSocketLocation(HandSocketNameRight),
+        OwnerMeshComponent->GetSocketLocation
+        (HandSocketNameRight), FQuat::Identity, ECC_WorldDynamic, FCollisionShape::MakeSphere(FistCollisionRadius),
+        CollisionParams);
+
+    if (!HitResult.GetActor())
+        GetWorld()->SweepSingleByChannel(HitResult, OwnerMeshComponent->GetSocketLocation(HandSocketNameLeft),
+            OwnerMeshComponent->GetSocketLocation
+            (HandSocketNameLeft), FQuat::Identity, ECC_WorldDynamic, FCollisionShape::MakeSphere(FistCollisionRadius),
+            CollisionParams);
+
+    if (AActor* HitActor = HitResult.GetActor())
+    {
+        ApplyDamageToActor(HitActor, DamageAmount);
+        bHasCollisionReachedTarget = true;
+
+        if (bDrawDebugSpheres)
+        {
+            DrawDebugSpheres();
+            UE_LOG(LogTemp, Warning, TEXT("Hit Actor: %s"), *HitActor->GetName());
+        }
+    }
+}
+
+void APS_WeaponFists::DrawDebugSpheres()
+{
+    if (!OwnerMeshComponent) return;
+
     FHitResult OutHit;
-    DrawDebugSphereTraceSingle(GetWorld(), Mesh->GetSocketLocation(HandSocketLeftName), Mesh->GetSocketLocation
-        (HandSocketLeftName), FistCollisionRadius, EDrawDebugTrace::ForOneFrame, true, OutHit, FLinearColor::Green,
+
+    DrawDebugSphereTraceSingle(GetWorld(), OwnerMeshComponent->GetSocketLocation(HandSocketNameLeft),
+        OwnerMeshComponent->GetSocketLocation
+        (HandSocketNameLeft), FistCollisionRadius, EDrawDebugTrace::ForOneFrame, true, OutHit, FLinearColor::Green,
         FLinearColor::Red, 1.f);
-    DrawDebugSphereTraceSingle(GetWorld(), Mesh->GetSocketLocation(HandSocketRightName), Mesh->GetSocketLocation
-        (HandSocketRightName), FistCollisionRadius, EDrawDebugTrace::ForOneFrame, true, OutHit, FLinearColor::Green,
+    DrawDebugSphereTraceSingle(GetWorld(), OwnerMeshComponent->GetSocketLocation(HandSocketNameRight),
+        OwnerMeshComponent->GetSocketLocation
+        (HandSocketNameRight), FistCollisionRadius, EDrawDebugTrace::ForOneFrame, true, OutHit, FLinearColor::Green,
         FLinearColor::Red, 1.f);
 }
 

@@ -31,10 +31,20 @@ protected:
     UAnimMontage* FireMontage = nullptr;
     UPROPERTY(EditAnywhere)
     bool bIsFiring = false;
+    UPROPERTY()
+    UMeshComponent* OwnerMeshComponent = nullptr;
 
     UPROPERTY()
     FTimerHandle FireRateTimer;
 
     virtual void BeginPlay() override;
+
+    // Finds Actor's Health-component and applies damage to it.
+    UFUNCTION(Blueprintable)
+    virtual void ApplyDamageToActor(AActor* & Actor, const float Damage);
+
+    // Calls on second tick after game start.
+    UFUNCTION(BlueprintCallable)
+    virtual void OnSecondTick();
 
 };
