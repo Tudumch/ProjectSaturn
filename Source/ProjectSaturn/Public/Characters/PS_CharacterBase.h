@@ -26,10 +26,13 @@ public:
 
     // Plays Death AnimMontage and returns its length.
     UFUNCTION(BlueprintCallable)
-    float StartDeathSequence();
+    void StartDeathSequence();
 
     UFUNCTION(BlueprintPure)
     bool IsInteracting() const { return bIsInteracting; }
+
+    UFUNCTION(BlueprintPure)
+    UAnimMontage* GetDeathAnimMontage() const { return DeathAnimation; };
 
 protected:
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -37,13 +40,15 @@ protected:
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations")
     UAnimMontage* DeathAnimation;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Interaction")
+    float InteractionRadius = 200.f;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     class USpringArmComponent* SpringArm;
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     class UCameraComponent* Camera;
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    class USphereComponent* InteractionRadius;
+    class USphereComponent* InteractionRadiusSphere;
     UPROPERTY(BlueprintReadWrite)
     class UPS_AnimInstance* AnimInstance;
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -76,4 +81,6 @@ protected:
     void OnFinishPlayStartingAnimMontage();
     UFUNCTION()
     void OnFinishPlayEndingAnimMontage();
+    UFUNCTION(BlueprintCallable)
+    virtual void OnZeroHealthEnergy(AActor* Actor);
 };

@@ -53,16 +53,13 @@ void UPS_PlayerDeathRespawnManager::OnZeroHealthEnergy(AActor* Actor)
 {
     if (!Actor) return;
 
-    APS_CharacterBase* Character = Cast<APS_CharacterBase>(Actor);
+    const APS_CharacterBase* Character = Cast<APS_CharacterBase>(Actor);
     if (!Character) return;
 
-    float DeathSequenceLength = Character->StartDeathSequence();
+    const float DeathSequenceLength = Character->GetDeathAnimMontage()->GetPlayLength();
 
     APlayerController* PlayerController = Cast<APlayerController>(Character->GetController());
     if (!PlayerController) return;
-
-    PlayerController->PlayerCameraManager->StartCameraFade(0, 1, DeathSequenceLength / 2, FLinearColor::Black, true,
-        true);
 
     FTimerHandle DeathSequenceTimer;
     GetWorld()->GetTimerManager().SetTimer(DeathSequenceTimer,

@@ -22,18 +22,18 @@ APS_CharacterBase::APS_CharacterBase(const FObjectInitializer& ObjectInitializer
 
     SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArmComponent"));
     Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("CameraComponent"));
-    InteractionRadius = CreateDefaultSubobject<USphereComponent>(TEXT("InteractionRadius"));
-    InteractionRadius->SetSphereRadius(200);
+    InteractionRadiusSphere = CreateDefaultSubobject<USphereComponent>(TEXT("InteractionRadius"));
+    InteractionRadiusSphere->SetSphereRadius(InteractionRadius);
     EnergyComponent = CreateDefaultSubobject<UPS_EnergyComponent>(TEXT("EnergyComponent"));
     HealthComponent = CreateDefaultSubobject<UPS_HealthComponent>(TEXT("HealthComponent"));
     WeaponComponent = CreateDefaultSubobject<UPS_WeaponComponent>(TEXT("WeaponComponent"));
 
     SpringArm->SetupAttachment(RootComponent);
-    InteractionRadius->SetupAttachment(RootComponent);
+    InteractionRadiusSphere->SetupAttachment(RootComponent);
     Camera->SetupAttachment(SpringArm, USpringArmComponent::SocketName);
 
-    InteractionRadius->OnComponentBeginOverlap.AddDynamic(this, &APS_CharacterBase::OnInteractionRadiusOverlapBegin);
-    InteractionRadius->OnComponentEndOverlap.AddDynamic(this, &APS_CharacterBase::OnInteractionRadiusOverlapEnd);
+    InteractionRadiusSphere->OnComponentBeginOverlap.AddDynamic(this, &APS_CharacterBase::OnInteractionRadiusOverlapBegin);
+    InteractionRadiusSphere->OnComponentEndOverlap.AddDynamic(this, &APS_CharacterBase::OnInteractionRadiusOverlapEnd);
 }
 
 
@@ -41,6 +41,9 @@ void APS_CharacterBase::BeginPlay()
 {
     Super::BeginPlay();
     AnimInstance = Cast<UPS_AnimInstance>(GetMesh()->GetAnimInstance());
+
+    HealthComponent->OnZeroHealth.AddDynamic(this, &ThisClass::OnZeroHealthEnergy);
+    EnergyComponent->OnZeroEnergy.AddDynamic(this, &ThisClass::OnZeroHealthEnergy);
 }
 
 void APS_CharacterBase::OnInteractionRadiusOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
@@ -65,8 +68,6 @@ void APS_CharacterBase::OnInteractionRadiusOverlapEnd(UPrimitiveComponent* Overl
     }
 }
 
-// ----------------------------
-// Prop interaction functions
 void APS_CharacterBase::Interact()
 {
     if (!NearbyInteractableProp) return;
@@ -77,19 +78,24 @@ void APS_CharacterBase::Interact()
 void APS_CharacterBase::StartRespawnSequence()
 {
     bIsInteracting = true;
-    FTimerHandle RespawnDelayTimer; // timer is used to wait for the character AnimInstance loading
-    GetWorld()->GetTimerManager().SetTimer(RespawnDelayTimer, this, &ThisClass::EndInteraction, 0.01, false);
+    GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ThisClass::EndInteraction); // delay for AnimInstance initialization
 }
 
-float APS_CharacterBase::StartDeathSequence()
+void APS_CharacterBase::StartDeathSequence()
 {
     bIsInteracting = true;
 
     if (!DeathAnimation)
-        UE_LOG(LogTemp, Warning, TEXT("%s: death animation doesn't set!"), *GetName());
+        UE_LOG(LogTemp, Error, TEXT("%s: death animation doesn't set!"), *GetName());
 
-    float SequenceLength = AnimInstance->Montage_Play(DeathAnimation);
-    return SequenceLength;
+    const float SequenceLength = AnimInstance->Montage_Play(DeathAnimation);
+
+    if (APlayerController* PlayerController = Cast<APlayerController>(GetController()))
+    // TODO: transfer this to CharacterPlayer class, when it will be created
+    {
+        PlayerController->PlayerCameraManager->StartCameraFade(0, 1, SequenceLength / 2, FLinearColor::Black, true,
+            true);
+    }
 }
 
 void APS_CharacterBase::StartInteraction()
@@ -98,7 +104,7 @@ void APS_CharacterBase::StartInteraction()
 
     if (!AnimInstance) return;
     float MontageDuration = AnimInstance->StartInteractionWithProp(NearbyInteractableProp);
-    
+
     GetWorld()->GetTimerManager().SetTimer(MontageDurationTimer, this, &ThisClass::OnFinishPlayStartingAnimMontage,
         MontageDuration, false);
 
@@ -119,7 +125,7 @@ void APS_CharacterBase::EndInteraction()
 
     if (!AnimInstance) return;
     float MontageDuration = AnimInstance->EndInteractionWithProp(NearbyInteractableProp);
-    
+
     GetWorld()->GetTimerManager().SetTimer(MontageDurationTimer, this, &ThisClass::OnFinishPlayEndingAnimMontage,
         MontageDuration, false);
 }
@@ -134,4 +140,9 @@ void APS_CharacterBase::OnFinishPlayEndingAnimMontage()
 {
     bIsInteracting = false;
     GetWorldTimerManager().ClearTimer(MontageDurationTimer);
+}
+
+void APS_CharacterBase::OnZeroHealthEnergy(AActor* Actor)
+{
+    StartDeathSequence();
 }
