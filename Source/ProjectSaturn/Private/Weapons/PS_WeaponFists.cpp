@@ -4,10 +4,10 @@
 #include "Weapons/PS_WeaponFists.h"
 #include "KismetTraceUtils.h"
 
-float APS_WeaponFists::StartFire()
+void APS_WeaponFists::StartFire()
 {
+    Super::StartFire();
     GetWorld()->GetTimerManager().SetTimer(CollisionSpawnTimer, this, &ThisClass::SpawnFistsCollision, 0.1f, true);
-    return Super::StartFire();
 }
 
 void APS_WeaponFists::StopFire()

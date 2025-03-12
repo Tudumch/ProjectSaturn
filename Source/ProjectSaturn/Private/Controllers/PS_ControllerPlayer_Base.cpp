@@ -43,7 +43,7 @@ void APS_ControllerPlayer_Base::SetupInputComponent()
     EnhancedInputComponent->BindAction(RunIA, ETriggerEvent::Started, this, &ThisClass::ToggleRun);
     EnhancedInputComponent->BindAction(InteractIA, ETriggerEvent::Started, this, &ThisClass::Interact);
     EnhancedInputComponent->BindAction(AttackBaseIA, ETriggerEvent::Started, this, &ThisClass::AttackBasePressed);
-    EnhancedInputComponent->BindAction(AttackBaseIA, ETriggerEvent::Started, this, &ThisClass::AttackBaseReleased);
+    EnhancedInputComponent->BindAction(AttackBaseIA, ETriggerEvent::Completed, this, &ThisClass::AttackBaseReleased);
     EnhancedInputComponent->BindAction(SaveIA, ETriggerEvent::Started, this, &ThisClass::Save);
     EnhancedInputComponent->BindAction(LoadIA, ETriggerEvent::Started, this, &ThisClass::Load);
 

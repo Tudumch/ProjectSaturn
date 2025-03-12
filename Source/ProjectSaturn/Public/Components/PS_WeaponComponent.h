@@ -37,6 +37,11 @@ protected:
     UPROPERTY(EditDefaultsOnly, Category= "Weapon")
     TSubclassOf<APS_WeaponBase> InitialWeaponClass;
 
+    FTimerHandle FireCyclingTimerHandle;
+    float MinimalDelayBetweenShots = 0.1f; // in seconds
+
     virtual void BeginPlay() override;
 
+    UFUNCTION(BlueprintCallable)
+    virtual void Fire();
 };

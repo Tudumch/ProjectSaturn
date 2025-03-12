@@ -14,17 +14,18 @@ UPS_WeaponComponent::UPS_WeaponComponent()
 
 void UPS_WeaponComponent::AttackBaseOnPressed()
 {
-    if (!ActiveWeapon) return;
+    if (!ActiveWeapon || bIsAttacking) return;
 
     bIsAttacking = true;
-    ActiveWeapon->StartFire();
-    
-    if (AnimInstance)
-    AnimInstance->Montage_Play(ActiveWeapon->GetFireMontage());
+    Fire();
+    GetWorld()->GetTimerManager().SetTimer(FireCyclingTimerHandle, this, &ThisClass::Fire, MinimalDelayBetweenShots,
+        true);
 }
 
 void UPS_WeaponComponent::AttackBaseOnReleased()
 {
+    GetWorld()->GetTimerManager().ClearTimer(FireCyclingTimerHandle);
+    bIsAttacking = false;
 }
 
 
@@ -40,4 +41,14 @@ void UPS_WeaponComponent::BeginPlay()
     ActiveWeapon->AttachToComponent(Character->GetMesh(), FAttachmentTransformRules::KeepRelativeTransform,
         WeaponSocketRightName);
 
+}
+
+void UPS_WeaponComponent::Fire()
+{
+    if (ActiveWeapon->IsFiring()) return;
+
+    ActiveWeapon->StartFire();
+
+    if (AnimInstance)
+        AnimInstance->Montage_Play(ActiveWeapon->GetFireMontage());
 }

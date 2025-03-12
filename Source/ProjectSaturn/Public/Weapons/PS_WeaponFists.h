@@ -12,7 +12,7 @@ class PROJECTSATURN_API APS_WeaponFists : public APS_WeaponBase
     GENERATED_BODY()
 
 public:
-    virtual float StartFire() override;
+    virtual void StartFire() override;
     virtual void StopFire() override;
 
 protected:

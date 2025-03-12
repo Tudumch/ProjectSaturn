@@ -15,10 +15,14 @@ public:
     APS_WeaponBase();
 
     UFUNCTION(BlueprintCallable)
-    virtual float StartFire();
+    virtual void StartFire();
     UFUNCTION(BlueprintCallable)
     virtual void StopFire();
 
+    UFUNCTION(BlueprintPure)
+    bool IsFiring() const { return bIsFiring; } ;
+    UFUNCTION(BlueprintPure)
+    float GetFireRate() const { return FireRate; } ;
     UFUNCTION(BlueprintPure)
     UAnimMontage* GetFireMontage() const { return FireMontage; } ;
 

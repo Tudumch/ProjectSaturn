@@ -32,7 +32,8 @@ APS_CharacterBase::APS_CharacterBase(const FObjectInitializer& ObjectInitializer
     InteractionRadiusSphere->SetupAttachment(RootComponent);
     Camera->SetupAttachment(SpringArm, USpringArmComponent::SocketName);
 
-    InteractionRadiusSphere->OnComponentBeginOverlap.AddDynamic(this, &APS_CharacterBase::OnInteractionRadiusOverlapBegin);
+    InteractionRadiusSphere->OnComponentBeginOverlap.AddDynamic(this,
+        &APS_CharacterBase::OnInteractionRadiusOverlapBegin);
     InteractionRadiusSphere->OnComponentEndOverlap.AddDynamic(this, &APS_CharacterBase::OnInteractionRadiusOverlapEnd);
 }
 
@@ -77,8 +78,11 @@ void APS_CharacterBase::Interact()
 
 void APS_CharacterBase::StartRespawnSequence()
 {
+    if (DisableSpawnAnimation) return;
+
     bIsInteracting = true;
-    GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ThisClass::EndInteraction); // delay for AnimInstance initialization
+    GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ThisClass::EndInteraction);
+    // delay for AnimInstance initialization
 }
 
 void APS_CharacterBase::StartDeathSequence()

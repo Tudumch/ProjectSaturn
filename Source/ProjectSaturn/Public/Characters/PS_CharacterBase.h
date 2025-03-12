@@ -35,6 +35,8 @@ public:
     UAnimMontage* GetDeathAnimMontage() const { return DeathAnimation; };
 
 protected:
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Debug")
+    bool DisableSpawnAnimation = false;
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     bool bIsInteracting = false;
 

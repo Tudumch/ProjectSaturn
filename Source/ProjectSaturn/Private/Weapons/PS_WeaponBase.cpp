@@ -16,14 +16,12 @@ void APS_WeaponBase::StopFire()
     bIsFiring = false;
 }
 
-float APS_WeaponBase::StartFire()
+void APS_WeaponBase::StartFire()
 {
-    if (bIsFiring || !FireMontage) return 0.f;
+    if (bIsFiring || !FireMontage) return;
 
     bIsFiring = true;
     GetWorld()->GetTimerManager().SetTimer(FireRateTimer, this, &ThisClass::StopFire, FireRate);
-
-    return FireMontage->GetPlayLength();
 }
 
 void APS_WeaponBase::BeginPlay()
