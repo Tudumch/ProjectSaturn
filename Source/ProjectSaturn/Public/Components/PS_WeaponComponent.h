@@ -34,10 +34,11 @@ protected:
     UPROPERTY(EditDefaultsOnly, Category = "Weapon")
     FName WeaponSocketLeftName = TEXT("WeaponSocket_L");
 
-    UPROPERTY(EditDefaultsOnly, Category= "Weapon")
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category= "Weapon")
     TSubclassOf<APS_WeaponBase> InitialWeaponClass;
 
     FTimerHandle FireCyclingTimerHandle;
+    UPROPERTY()
     float MinimalDelayBetweenShots = 0.1f; // in seconds
 
     virtual void BeginPlay() override;

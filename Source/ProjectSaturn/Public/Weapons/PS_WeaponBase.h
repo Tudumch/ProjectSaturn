@@ -35,6 +35,10 @@ protected:
     UAnimMontage* FireMontage = nullptr;
     UPROPERTY(EditAnywhere)
     bool bIsFiring = false;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    USceneComponent* Root;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    USkeletalMeshComponent* SkeletalMeshComponent = nullptr;
     UPROPERTY()
     UMeshComponent* OwnerMeshComponent = nullptr;
 

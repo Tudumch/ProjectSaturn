@@ -37,9 +37,12 @@ void UPS_WeaponComponent::BeginPlay()
     AnimInstance = Cast<UPS_AnimInstance>(Character->GetMesh()->GetAnimInstance());
 
     ActiveWeapon = GetWorld()->SpawnActor<APS_WeaponBase>(InitialWeaponClass);
-    ActiveWeapon->SetOwner(GetOwner());
-    ActiveWeapon->AttachToComponent(Character->GetMesh(), FAttachmentTransformRules::KeepRelativeTransform,
-        WeaponSocketRightName);
+    if (ActiveWeapon)
+    {
+        ActiveWeapon->SetOwner(GetOwner());
+        ActiveWeapon->AttachToComponent(Character->GetMesh(), FAttachmentTransformRules::KeepRelativeTransform,
+            WeaponSocketRightName);
+    }
 
 }
 
