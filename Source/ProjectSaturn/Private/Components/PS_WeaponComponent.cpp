@@ -26,6 +26,8 @@ void UPS_WeaponComponent::AttackBaseOnReleased()
 {
     GetWorld()->GetTimerManager().ClearTimer(FireCyclingTimerHandle);
     bIsAttacking = false;
+    if (AnimInstance)
+        AnimInstance->bIsAttacking = true;
 }
 
 
@@ -42,6 +44,8 @@ void UPS_WeaponComponent::BeginPlay()
         ActiveWeapon->SetOwner(GetOwner());
         ActiveWeapon->AttachToComponent(Character->GetMesh(), FAttachmentTransformRules::KeepRelativeTransform,
             WeaponSocketRightName);
+
+        if (AnimInstance) AnimInstance->SetCurrentWeaponType(ActiveWeapon->GetWeaponType());
     }
 
 }
@@ -53,5 +57,8 @@ void UPS_WeaponComponent::Fire()
     ActiveWeapon->StartFire();
 
     if (AnimInstance)
+    {
         AnimInstance->Montage_Play(ActiveWeapon->GetFireMontage());
+        AnimInstance->bIsAttacking = true;
+    }
 }

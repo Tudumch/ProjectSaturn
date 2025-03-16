@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Library/PS_Enums.h"
 #include "PS_WeaponBase.generated.h"
 
 UCLASS()
@@ -25,12 +26,16 @@ public:
     float GetFireRate() const { return FireRate; } ;
     UFUNCTION(BlueprintPure)
     UAnimMontage* GetFireMontage() const { return FireMontage; } ;
+    UFUNCTION(BlueprintPure)
+    EWeaponType GetWeaponType() const { return WeaponType; } ;
 
 protected:
     UPROPERTY(EditAnywhere)
     float DamageAmount = 30.f;
     UPROPERTY(EditAnywhere)
     float FireRate = 1.f;
+    UPROPERTY(EditDefaultsOnly)
+    EWeaponType WeaponType = EWeaponType::BareHands;
     UPROPERTY(EditAnywhere)
     UAnimMontage* FireMontage = nullptr;
     UPROPERTY(EditAnywhere)
