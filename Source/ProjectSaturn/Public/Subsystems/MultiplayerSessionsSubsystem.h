@@ -4,6 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "Subsystems/GameInstanceSubsystem.h"
+
+#include "Interfaces/OnlineSessionInterface.h"
+
 #include "MultiplayerSessionsSubsystem.generated.h"
 
 /**
@@ -17,7 +20,23 @@ class PROJECTSATURN_API UMultiplayerSessionsSubsystem : public UGameInstanceSubs
 public:
     UMultiplayerSessionsSubsystem();
 
+    UPROPERTY()
+    FString TestMapPath = "/Game/Maps/Cell/Level_Cell?listen";
+
     void Initialize(FSubsystemCollectionBase& Collection) override;
     void Deinitialize() override;
+
+    UFUNCTION(BlueprintCallable)
+    void CreateServer(FString ServerName);
+    UFUNCTION(BlueprintCallable)
+    void FindServer(FString ServerName);
+
+protected:
+    IOnlineSessionPtr SessionInterface;
+
+    UFUNCTION()
+    void OnCreateSessionComplete(FName SessionName, bool WasSuccessful);
 	
 };
+
+
