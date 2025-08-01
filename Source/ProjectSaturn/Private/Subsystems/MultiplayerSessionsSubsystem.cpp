@@ -6,13 +6,10 @@
 #include "OnlineSubsystem.h"
 #include "OnlineSessionSettings.h"
 
-
 void PrintString(const FString& Str)
 {
     if (GEngine)
-    {
         GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Cyan, Str);
-    }
 }
 
 UMultiplayerSessionsSubsystem::UMultiplayerSessionsSubsystem()
@@ -24,12 +21,13 @@ void UMultiplayerSessionsSubsystem::Initialize(FSubsystemCollectionBase& Collect
     if (const IOnlineSubsystem* OnlineSubsystem = IOnlineSubsystem::Get()) // Steam or something
     {
         FString SubsystemName = OnlineSubsystem->GetSubsystemName().ToString();
-        PrintString(SubsystemName);
+        PrintString("Current Online Subsystem: " + SubsystemName);
 
         SessionInterface = OnlineSubsystem->GetSessionInterface();
         if (SessionInterface.IsValid())
         {
             SessionInterface->OnCreateSessionCompleteDelegates.AddUObject(this, &UMultiplayerSessionsSubsystem::OnCreateSessionComplete);
+            SessionInterface->OnDestroySessionCompleteDelegates.AddUObject(this, &UMultiplayerSessionsSubsystem::OnDestroySessionComplete);
         }
     }
 }
@@ -40,8 +38,6 @@ void UMultiplayerSessionsSubsystem::Deinitialize()
 
 void UMultiplayerSessionsSubsystem::CreateServer(FString ServerName)
 {
-    PrintString("CreateServer");
-
     if (ServerName.IsEmpty())
     {
         PrintString("Server name cannot be empty!");
@@ -50,6 +46,16 @@ void UMultiplayerSessionsSubsystem::CreateServer(FString ServerName)
 
     FName MySessionName = FName("Co-op Adventure Session Name");
 
+    if (FNamedOnlineSession *ExistingSession = SessionInterface->GetNamedSession(MySessionName))
+    {
+        FString Msg = FString::Printf(TEXT("Session with name %s already exists, destroying it."), *MySessionName.ToString());
+        PrintString(Msg);
+        CreateServerAfterDestroy = true;
+        DestroyServerName = ServerName;
+        SessionInterface->DestroySession(MySessionName);
+        return;
+    }
+    
     FOnlineSessionSettings SessionSettings;
 
     SessionSettings.bAllowJoinInProgress = true;
@@ -75,8 +81,15 @@ void UMultiplayerSessionsSubsystem::FindServer(FString ServerName)
 
 void UMultiplayerSessionsSubsystem::OnCreateSessionComplete(FName SessionName, bool WasSuccessful)
 {
-    PrintString(FString::Printf(TEXT("OnCreateSessionComplete: %d"), WasSuccessful));
-
     if (WasSuccessful)
         GetWorld()->ServerTravel(TestMapPath);
+}
+
+void UMultiplayerSessionsSubsystem::OnDestroySessionComplete(FName SessionName, bool WasSuccessful)
+{
+    if (CreateServerAfterDestroy)
+    {
+        CreateServerAfterDestroy = false;
+        CreateServer(DestroyServerName);
+    }
 }

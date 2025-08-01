@@ -33,9 +33,14 @@ public:
 
 protected:
     IOnlineSessionPtr SessionInterface;
+    
+    bool CreateServerAfterDestroy = false;
+    FString DestroyServerName;
 
     UFUNCTION()
     void OnCreateSessionComplete(FName SessionName, bool WasSuccessful);
+	UFUNCTION()
+	void OnDestroySessionComplete(FName SessionName, bool WasSuccessful);
 	
 };
 
