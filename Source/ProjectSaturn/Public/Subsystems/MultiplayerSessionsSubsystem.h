@@ -6,6 +6,7 @@
 #include "Subsystems/GameInstanceSubsystem.h"
 
 #include "Interfaces/OnlineSessionInterface.h"
+#include "OnlineSessionSettings.h"
 
 #include "MultiplayerSessionsSubsystem.generated.h"
 
@@ -36,12 +37,19 @@ protected:
     
     bool CreateServerAfterDestroy = false;
     FString DestroyServerName;
+    FString ServerNameToFind = "";
+    FName MySessionName = FName("Co-op Adventure Session Name");
 
     UFUNCTION()
     void OnCreateSessionComplete(FName SessionName, bool WasSuccessful);
 	UFUNCTION()
 	void OnDestroySessionComplete(FName SessionName, bool WasSuccessful);
-	
+    UFUNCTION()
+    void OnFindSessionsComplete(bool WasSuccessful);
+    
+    void OnJoinSessionComplete(FName SessionName, EOnJoinSessionCompleteResult::Type Result);
+
+    TSharedPtr<FOnlineSessionSearch> SessionSearch;
 };
 
 
