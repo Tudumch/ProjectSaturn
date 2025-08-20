@@ -20,6 +20,8 @@ void APS_ControllerPlayer_Base::BeginPlay()
     Super::BeginPlay();
 
     DefineCoreVariables();
+
+    SetShowMouseCursor(true);
 }
 
 void APS_ControllerPlayer_Base::SetupInputComponent()

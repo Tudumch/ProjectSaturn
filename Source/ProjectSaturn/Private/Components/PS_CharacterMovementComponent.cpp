@@ -32,16 +32,19 @@ void UPS_CharacterMovementComponent::Move(const FInputActionValue& Value)
 
 void UPS_CharacterMovementComponent::Look(const FInputActionValue& Value)
 {
-    if (!PlayerController)
-    {
-        PlayerController = Cast<APlayerController>(GetController());
-        if (!PlayerController) return;
-    }
+    // Disabled because of new project conception.
+    return;
     
-    const FVector2D LookAxisValue = Value.Get<FVector2D>();
-    
-    PlayerController->AddYawInput(LookAxisValue.X);
-    PlayerController->AddPitchInput(LookAxisValue.Y);
+    // if (!PlayerController)
+    // {
+    //     PlayerController = Cast<APlayerController>(GetController());
+    //     if (!PlayerController) return;
+    // }
+    //
+    // const FVector2D LookAxisValue = Value.Get<FVector2D>();
+    //
+    // PlayerController->AddYawInput(LookAxisValue.X);
+    // PlayerController->AddPitchInput(LookAxisValue.Y);
 }
 
 void UPS_CharacterMovementComponent::Run()
