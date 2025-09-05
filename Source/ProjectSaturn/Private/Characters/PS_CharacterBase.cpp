@@ -14,6 +14,9 @@
 #include "Components/SphereComponent.h"
 #include "Props/PS_Prop_Base.h"
 
+#include "GAS/PS_AbilitySystemComponent.h"
+#include "GAS/PS_AttributeSet.h"
+
 APS_CharacterBase::APS_CharacterBase(const FObjectInitializer& ObjectInitializer)
     : Super(ObjectInitializer.SetDefaultSubobjectClass<UPS_CharacterMovementComponent>(
         ACharacter::CharacterMovementComponentName))
@@ -32,6 +35,9 @@ APS_CharacterBase::APS_CharacterBase(const FObjectInitializer& ObjectInitializer
     InteractionRadiusSphere->SetupAttachment(RootComponent);
     Camera->SetupAttachment(SpringArm, USpringArmComponent::SocketName);
 
+    PS_AbilitySystemComponent = CreateDefaultSubobject<UPS_AbilitySystemComponent>(TEXT("AbilitySystemComponent"));
+    PS_AttributeSet = CreateDefaultSubobject<UPS_AttributeSet>(TEXT("AttributeSet"));
+
     InteractionRadiusSphere->OnComponentBeginOverlap.AddDynamic(this,
         &APS_CharacterBase::OnInteractionRadiusOverlapBegin);
     InteractionRadiusSphere->OnComponentEndOverlap.AddDynamic(this, &APS_CharacterBase::OnInteractionRadiusOverlapEnd);
@@ -43,8 +49,11 @@ void APS_CharacterBase::BeginPlay()
     Super::BeginPlay();
     AnimInstance = Cast<UPS_AnimInstance>(GetMesh()->GetAnimInstance());
 
+    // TODO: remove after finish GAS implementation
     HealthComponent->OnZeroHealth.AddDynamic(this, &ThisClass::OnZeroHealthEnergy);
     EnergyComponent->OnZeroEnergy.AddDynamic(this, &ThisClass::OnZeroHealthEnergy);
+
+    PS_AbilitySystemComponent->ApplyInitialEffects();
 }
 
 void APS_CharacterBase::OnInteractionRadiusOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
@@ -149,4 +158,9 @@ void APS_CharacterBase::OnFinishPlayEndingAnimMontage()
 void APS_CharacterBase::OnZeroHealthEnergy(AActor* Actor)
 {
     StartDeathSequence();
+}
+
+UAbilitySystemComponent* APS_CharacterBase::GetAbilitySystemComponent() const 
+{
+    return PS_AbilitySystemComponent;
 }

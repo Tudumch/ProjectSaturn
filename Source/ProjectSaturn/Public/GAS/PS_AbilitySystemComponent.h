@@ -13,5 +13,11 @@ UCLASS()
 class PROJECTSATURN_API UPS_AbilitySystemComponent : public UAbilitySystemComponent
 {
 	GENERATED_BODY()
-	
+
+public:
+    void ApplyInitialEffects();
+
+protected:
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    TArray<TSubclassOf<UGameplayEffect>> InitialEffects;
 };

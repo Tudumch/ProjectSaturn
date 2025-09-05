@@ -4,13 +4,16 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "AbilitySystemInterface.h"
 #include "PS_CharacterBase.generated.h"
 
+class UPS_AttributeSet;
+class UPS_AbilitySystemComponent;
 class APS_Prop_Base;
 class APS_Prop_RechargingCapsule;
 
 UCLASS()
-class PROJECTSATURN_API APS_CharacterBase : public ACharacter
+class PROJECTSATURN_API APS_CharacterBase : public ACharacter, public IAbilitySystemInterface
 {
     GENERATED_BODY()
 
@@ -20,11 +23,11 @@ public:
     UFUNCTION(BlueprintCallable)
     void Interact();
 
-    // Imitates ending of interaction process with prop. Is used when the player respawns.
+    // Imitates ending of interaction process with prop. It used when the player respawns.
     UFUNCTION(BlueprintCallable)
     void StartRespawnSequence();
 
-    // Plays Death AnimMontage and returns its length.
+    // Plays Death AnimMontage.
     UFUNCTION(BlueprintCallable)
     void StartDeathSequence();
 
@@ -33,6 +36,9 @@ public:
 
     UFUNCTION(BlueprintPure)
     UAnimMontage* GetDeathAnimMontage() const { return DeathAnimation; };
+    
+    UFUNCTION()
+    virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
 protected:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Debug")
@@ -59,6 +65,11 @@ protected:
     class UPS_HealthComponent* HealthComponent;
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     class UPS_WeaponComponent* WeaponComponent;
+    
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    UPS_AbilitySystemComponent* PS_AbilitySystemComponent;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    UPS_AttributeSet* PS_AttributeSet;
 
     UPROPERTY()
     APS_Prop_Base* NearbyInteractableProp; // stores last overlapped interactable prop
@@ -85,4 +96,5 @@ protected:
     void OnFinishPlayEndingAnimMontage();
     UFUNCTION(BlueprintCallable)
     virtual void OnZeroHealthEnergy(AActor* Actor);
+
 };
