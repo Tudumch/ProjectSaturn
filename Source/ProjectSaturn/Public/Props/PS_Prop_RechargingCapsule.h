@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "ActiveGameplayEffectHandle.h"
 #include "Props/PS_Prop_Base.h"
 #include "PS_Prop_RechargingCapsule.generated.h"
 
@@ -23,13 +24,6 @@ protected:
     float ChargeAmount = 1; // how much charge will the capsule charge per tick
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     float ChargeTick = 1; // how many seconds pass between charging ticks
-    UPROPERTY()
-    class UPS_EnergyComponent* TargetEnergyComponent;
-    UPROPERTY()
-    class UPS_HealthComponent* TargetHealthComponent;
-    UPROPERTY()
-    FTimerHandle ChargeTickTimer;
 
-    UFUNCTION(BlueprintCallable)
-    void Charge();
+    FActiveGameplayEffectHandle ActiveGameplayEffect;
 };

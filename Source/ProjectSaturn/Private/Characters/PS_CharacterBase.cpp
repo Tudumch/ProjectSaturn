@@ -27,8 +27,8 @@ APS_CharacterBase::APS_CharacterBase(const FObjectInitializer& ObjectInitializer
     Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("CameraComponent"));
     InteractionRadiusSphere = CreateDefaultSubobject<USphereComponent>(TEXT("InteractionRadius"));
     InteractionRadiusSphere->SetSphereRadius(InteractionRadius);
-    EnergyComponent = CreateDefaultSubobject<UPS_EnergyComponent>(TEXT("EnergyComponent"));
-    HealthComponent = CreateDefaultSubobject<UPS_HealthComponent>(TEXT("HealthComponent"));
+    EnergyComponent = CreateDefaultSubobject<UPS_EnergyComponent>(TEXT("EnergyComponent")); // TODO: delete after GAS implementation
+    HealthComponent = CreateDefaultSubobject<UPS_HealthComponent>(TEXT("HealthComponent")); // TODO: delete after GAS implementation
     WeaponComponent = CreateDefaultSubobject<UPS_WeaponComponent>(TEXT("WeaponComponent"));
 
     SpringArm->SetupAttachment(RootComponent);

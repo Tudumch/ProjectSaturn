@@ -27,10 +27,12 @@ APS_Prop_Base::APS_Prop_Base()
 void APS_Prop_Base::StartInteract(ACharacter* Character)
 {
     if (!Character) return;
+    InteractingCharacter = Character;
 }
 
 void APS_Prop_Base::StopInteract()
 {
+    InteractingCharacter = nullptr;
 }
 
 void APS_Prop_Base::ShowTooltip(const bool Value)
