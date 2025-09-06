@@ -24,13 +24,13 @@ public:
 
 protected:
     UPROPERTY()
+    APlayerController* PlayerController;
+    UPROPERTY()
     class APS_CharacterBase* OwnerCharacter;
     
     UPROPERTY()
-    class UPS_EnergyComponent* EnergyComponent;
+    class UAbilitySystemComponent* AbilitySystemComponent;
     
-    UPROPERTY()
-    APlayerController* PlayerController;
     
     UPROPERTY(EditAnywhere, Category = "Character Movement: Walking")
     float MaxRunSpeed = 600;
@@ -47,4 +47,7 @@ protected:
     bool IsRunning = false;
 
     virtual void BeginPlay() override;
+
+    UFUNCTION()
+    void ApplyEnergyDrainEffect(const float EnergyDrainAmount) const;
 };

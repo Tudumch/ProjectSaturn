@@ -15,7 +15,7 @@ class PROJECTSATURN_API UPS_AbilitySystemComponent : public UAbilitySystemCompon
 	GENERATED_BODY()
 
 public:
-    void ApplyInitialEffects();
+    void ApplyBaseEnergyDrainEffect();
 
 protected:
     UPROPERTY(EditAnywhere, BlueprintReadWrite)

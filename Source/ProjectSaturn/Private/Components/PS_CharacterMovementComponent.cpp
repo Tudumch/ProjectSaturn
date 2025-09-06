@@ -3,19 +3,26 @@
 
 #include "Components/PS_CharacterMovementComponent.h"
 #include "EnhancedInputComponent.h"
+#include "GameplayEffect.h"
 
 #include "Characters/PS_CharacterBase.h"
-
-#include "Components/PS_EnergyComponent.h"
+#include "GAS/PS_AttributeSet.h"
 
 void UPS_CharacterMovementComponent::Move(const FInputActionValue& Value)
 {
-    if(!OwnerCharacter || !EnergyComponent) return;
-    if (OwnerCharacter->IsInteracting()) return;
+    if(!OwnerCharacter || OwnerCharacter->IsInteracting()) return;
 
     float EnergyNeeded;
     IsRunning ? EnergyNeeded = EnergyForRunning : EnergyNeeded = EnergyForWalking;
-    if (EnergyComponent->GetCurrentEnergy() < EnergyNeeded) return;
+
+    if (AbilitySystemComponent)
+    {
+        bool bIsAttrValid = false;
+        float CurrentEnergy = AbilitySystemComponent->GetGameplayAttributeValue(UPS_AttributeSet::GetEnergyAttribute(), bIsAttrValid);
+        
+        if (!bIsAttrValid || CurrentEnergy < EnergyNeeded)
+            return;
+    }
     
     const FVector2D MovementVector = Value.Get<FVector2D>();
     const FRotator Rotation = GetController()->GetControlRotation();
@@ -27,14 +34,15 @@ void UPS_CharacterMovementComponent::Move(const FInputActionValue& Value)
     const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
     OwnerCharacter->AddMovementInput(RightDirection, MovementVector.Y);
 
-    EnergyComponent->ConsumeEnergy(EnergyNeeded);
+    ApplyEnergyDrainEffect(EnergyNeeded);
 }
 
 void UPS_CharacterMovementComponent::Look(const FInputActionValue& Value)
 {
     // Disabled because of new project conception.
     return;
-    
+
+    // TODO: delete after new project conception be approved
     // if (!PlayerController)
     // {
     //     PlayerController = Cast<APlayerController>(GetController());
@@ -59,6 +67,25 @@ void UPS_CharacterMovementComponent::BeginPlay()
 
     PlayerController = Cast<APlayerController>(GetController());
     OwnerCharacter = Cast<APS_CharacterBase>(GetOwner());
-    EnergyComponent = OwnerCharacter->FindComponentByClass<UPS_EnergyComponent>();
+    if (OwnerCharacter)
+        AbilitySystemComponent = OwnerCharacter->GetAbilitySystemComponent();
+    
     MaxWalkSpeedCached = MaxWalkSpeed;
+}
+
+void UPS_CharacterMovementComponent::ApplyEnergyDrainEffect(const float EnergyDrainAmount) const
+{
+    if (!OwnerCharacter || !AbilitySystemComponent) return;
+    
+    UGameplayEffect* EnergyDrainEffect = NewObject<UGameplayEffect>(GetTransientPackage(), FName(TEXT("MovementEnergyDrainEffect")));
+    EnergyDrainEffect->DurationPolicy = EGameplayEffectDurationType::Instant;
+
+    FGameplayModifierInfo ModifierInfo;
+    ModifierInfo.Attribute = UPS_AttributeSet::GetEnergyAttribute();
+    ModifierInfo.ModifierOp = EGameplayModOp::Additive;
+    ModifierInfo.ModifierMagnitude = FGameplayEffectModifierMagnitude(FScalableFloat(-EnergyDrainAmount));
+
+    EnergyDrainEffect->Modifiers.Add(ModifierInfo);
+
+    AbilitySystemComponent->ApplyGameplayEffectToSelf(EnergyDrainEffect, 1.0f, AbilitySystemComponent->MakeEffectContext());
 }

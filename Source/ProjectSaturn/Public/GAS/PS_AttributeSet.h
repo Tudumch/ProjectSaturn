@@ -24,18 +24,26 @@ class PROJECTSATURN_API UPS_AttributeSet : public UAttributeSet
 	GENERATED_BODY()
 
 public:
+    UPS_AttributeSet();
+    
     ATTRIBUTE_ACCESSORS(UPS_AttributeSet, Health)
     ATTRIBUTE_ACCESSORS(UPS_AttributeSet, MaxHealth)
     ATTRIBUTE_ACCESSORS(UPS_AttributeSet, Energy)
     ATTRIBUTE_ACCESSORS(UPS_AttributeSet, MaxEnergy)
+    ATTRIBUTE_ACCESSORS(UPS_AttributeSet, EnergyBaseConsumptionRate)
     
 protected:
     UPROPERTY()
     FGameplayAttributeData Health;
-    UPROPERTY()
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
     FGameplayAttributeData MaxHealth;
     UPROPERTY()
     FGameplayAttributeData Energy;
-    UPROPERTY()
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
     FGameplayAttributeData MaxEnergy;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    FGameplayAttributeData EnergyBaseConsumptionRate;
+
+    // Called before attributes change
+    virtual void PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue) override;
 };

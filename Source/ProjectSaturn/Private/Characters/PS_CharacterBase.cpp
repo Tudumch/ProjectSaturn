@@ -53,7 +53,7 @@ void APS_CharacterBase::BeginPlay()
     HealthComponent->OnZeroHealth.AddDynamic(this, &ThisClass::OnZeroHealthEnergy);
     EnergyComponent->OnZeroEnergy.AddDynamic(this, &ThisClass::OnZeroHealthEnergy);
 
-    PS_AbilitySystemComponent->ApplyInitialEffects();
+    PS_AbilitySystemComponent->ApplyBaseEnergyDrainEffect();
 }
 
 void APS_CharacterBase::OnInteractionRadiusOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
