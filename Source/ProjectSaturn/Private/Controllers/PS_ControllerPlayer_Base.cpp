@@ -5,15 +5,17 @@
 
 #include "EnhancedInputSubSystems.h"
 #include "EnhancedInputComponent.h"
+#include "GameplayEffect.h"
 
 #include "Characters/PS_CharacterBase.h"
 #include "Components/PS_CharacterMovementComponent.h"
 #include "PS_GameModeBase.h"
-#include "Components/PS_EnergyComponent.h"
-#include "Components/PS_HealthComponent.h"
 #include "Components/PS_WeaponComponent.h"
+#include "GAS/PS_AttributeSet.h"
 #include "Systems/LoadSaveSystem/PS_LoadSaveManager.h"
 
+
+class UGameplayEffect;
 
 void APS_ControllerPlayer_Base::BeginPlay()
 {
@@ -116,8 +118,35 @@ void APS_ControllerPlayer_Base::Load()
 void APS_ControllerPlayer_Base::DebugAddHPEnergy(const FInputActionValue& Value)
 {
     float InputValue = Value.Get<FVector>().X;
-    PS_CharacterBase->GetComponentByClass<UPS_HealthComponent>()->AddHealth(InputValue);
-    PS_CharacterBase->GetComponentByClass<UPS_EnergyComponent>()->AddEnergy(InputValue);
+
+    if (UAbilitySystemComponent* AbilitySystemComponent = PS_CharacterBase->GetAbilitySystemComponent())
+    {
+        // HP
+        UGameplayEffect* HP_Effect = NewObject<UGameplayEffect>(GetTransientPackage(), FName(TEXT("MovementEnergyDrainEffect")));
+        HP_Effect->DurationPolicy = EGameplayEffectDurationType::Instant;
+
+        FGameplayModifierInfo HP_ModifierInfo;
+        HP_ModifierInfo.Attribute = UPS_AttributeSet::GetHealthAttribute();
+        HP_ModifierInfo.ModifierOp = EGameplayModOp::Additive;
+        HP_ModifierInfo.ModifierMagnitude = FGameplayEffectModifierMagnitude(FScalableFloat(InputValue));
+
+        HP_Effect->Modifiers.Add(HP_ModifierInfo);
+
+        AbilitySystemComponent->ApplyGameplayEffectToSelf(HP_Effect, 1.0f, AbilitySystemComponent->MakeEffectContext());
+
+        // Energy
+        UGameplayEffect* Energy_Effect = NewObject<UGameplayEffect>(GetTransientPackage(), FName(TEXT("MovementEnergyDrainEffect")));
+        Energy_Effect->DurationPolicy = EGameplayEffectDurationType::Instant;
+
+        FGameplayModifierInfo Energy_ModifierInfo;
+        Energy_ModifierInfo.Attribute = UPS_AttributeSet::GetEnergyAttribute();
+        Energy_ModifierInfo.ModifierOp = EGameplayModOp::Additive;
+        Energy_ModifierInfo.ModifierMagnitude = FGameplayEffectModifierMagnitude(FScalableFloat(InputValue));
+
+        Energy_Effect->Modifiers.Add(Energy_ModifierInfo);
+
+        AbilitySystemComponent->ApplyGameplayEffectToSelf(Energy_Effect, 1.0f, AbilitySystemComponent->MakeEffectContext());
+    }
 }
 
 void APS_ControllerPlayer_Base::DefineCoreVariables()

@@ -9,6 +9,9 @@
 /**
  * 
  */
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnZeroHealthDelegate, class AActor*, Actor);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnZeroEnergyDelegate, class AActor*, Actor);
+
 UCLASS()
 class PROJECTSATURN_API UPS_AbilitySystemComponent : public UAbilitySystemComponent
 {
@@ -17,7 +20,11 @@ class PROJECTSATURN_API UPS_AbilitySystemComponent : public UAbilitySystemCompon
 public:
     void ApplyBaseEnergyDrainEffect();
 
+    FOnZeroHealthDelegate OnZeroHealthDelegate;
+    FOnZeroEnergyDelegate OnZeroEnergyDelegate;
+
 protected:
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    TArray<TSubclassOf<UGameplayEffect>> InitialEffects;
+    void BeginPlay() override;
+
+    void OnAttributeValueChanged(const FOnAttributeChangeData & AttributeChangeData);
 };

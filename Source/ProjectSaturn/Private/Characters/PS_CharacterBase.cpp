@@ -49,10 +49,8 @@ void APS_CharacterBase::BeginPlay()
     Super::BeginPlay();
     AnimInstance = Cast<UPS_AnimInstance>(GetMesh()->GetAnimInstance());
 
-    // TODO: remove after finish GAS implementation
-    HealthComponent->OnZeroHealth.AddDynamic(this, &ThisClass::OnZeroHealthEnergy);
-    EnergyComponent->OnZeroEnergy.AddDynamic(this, &ThisClass::OnZeroHealthEnergy);
-
+    PS_AbilitySystemComponent->OnZeroHealthDelegate.AddDynamic(this, &ThisClass::OnZeroHealthEnergy);
+    PS_AbilitySystemComponent->OnZeroEnergyDelegate.AddDynamic(this, &ThisClass::OnZeroHealthEnergy);
     PS_AbilitySystemComponent->ApplyBaseEnergyDrainEffect();
 }
 
