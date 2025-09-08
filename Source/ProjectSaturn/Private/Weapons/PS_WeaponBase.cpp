@@ -3,7 +3,6 @@
 
 #include "Weapons/PS_WeaponBase.h"
 
-#include "Components/PS_HealthComponent.h"
 #include "GameFramework/Character.h"
 
 APS_WeaponBase::APS_WeaponBase()
@@ -44,6 +43,4 @@ void APS_WeaponBase::StopFire()
 void APS_WeaponBase::ApplyDamageToActor(AActor*& Actor, const float Damage)
 {
     if (!Actor) return;
-    if (UPS_HealthComponent* HealthComp = Actor->GetComponentByClass<UPS_HealthComponent>())
-        HealthComp->AddHealth(-Damage);
 }
