@@ -7,6 +7,9 @@
 
 void UPS_AbilitySystemComponent::ApplyBaseEnergyDrainEffect()
 {
+    if (!GetOwner()->HasAuthority())
+        return;
+    
     UGameplayEffect* EnergyDrainEffect = NewObject<UGameplayEffect>(GetTransientPackage(), FName(TEXT("BaseEnergyDrainEffect")));
     EnergyDrainEffect->DurationPolicy = EGameplayEffectDurationType::Infinite;
     EnergyDrainEffect->Period = 1.0f; // Every second 
@@ -27,10 +30,14 @@ void UPS_AbilitySystemComponent::BeginPlay()
 {
     Super::BeginPlay();
 
+    InitAbilityActorInfo(GetOwner(), GetOwner());
+
     const FGameplayAttribute HealthAttribute = UPS_AttributeSet::GetHealthAttribute();
     GetGameplayAttributeValueChangeDelegate(HealthAttribute).AddUObject(this, &ThisClass::OnAttributeValueChanged);
     const FGameplayAttribute EnergyAttribute = UPS_AttributeSet::GetEnergyAttribute();
     GetGameplayAttributeValueChangeDelegate(EnergyAttribute).AddUObject(this, &ThisClass::OnAttributeValueChanged);
+
+    ApplyBaseEnergyDrainEffect();
 }
 
 void UPS_AbilitySystemComponent::OnAttributeValueChanged(const FOnAttributeChangeData& AttributeChangeData)

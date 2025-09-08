@@ -33,17 +33,28 @@ public:
     ATTRIBUTE_ACCESSORS(UPS_AttributeSet, EnergyBaseConsumptionRate)
     
 protected:
-    UPROPERTY()
+    UPROPERTY(ReplicatedUsing = OnRep_Health)
     FGameplayAttributeData Health;
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    UPROPERTY(ReplicatedUsing = OnRep_MaxHealth)
     FGameplayAttributeData MaxHealth;
-    UPROPERTY()
+    UPROPERTY(ReplicatedUsing = OnRep_Energy)
     FGameplayAttributeData Energy;
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    UPROPERTY(ReplicatedUsing = OnRep_MaxEnergy)
     FGameplayAttributeData MaxEnergy;
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     FGameplayAttributeData EnergyBaseConsumptionRate;
 
     // Called before attributes change
     virtual void PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue) override;
+
+    virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
+
+    UFUNCTION()
+    void OnRep_Health(const FGameplayAttributeData& OldValue);
+    UFUNCTION()
+    void OnRep_MaxHealth(const FGameplayAttributeData& OldValue);
+    UFUNCTION()
+    void OnRep_Energy(const FGameplayAttributeData& OldValue);
+    UFUNCTION()
+    void OnRep_MaxEnergy(const FGameplayAttributeData& OldValue);
 };

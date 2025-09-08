@@ -60,10 +60,6 @@ protected:
     UPROPERTY(BlueprintReadWrite)
     class UPS_AnimInstance* AnimInstance;
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    class UPS_EnergyComponent* EnergyComponent;
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    class UPS_HealthComponent* HealthComponent;
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
     class UPS_WeaponComponent* WeaponComponent;
     
     UPROPERTY(EditAnywhere, BlueprintReadWrite)

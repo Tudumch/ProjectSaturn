@@ -8,8 +8,6 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
 
-#include "Components/PS_EnergyComponent.h"
-#include "Components/PS_HealthComponent.h"
 #include "Components/PS_WeaponComponent.h"
 #include "Components/SphereComponent.h"
 #include "Props/PS_Prop_Base.h"
@@ -23,12 +21,12 @@ APS_CharacterBase::APS_CharacterBase(const FObjectInitializer& ObjectInitializer
 {
     PrimaryActorTick.bCanEverTick = false;
 
+    SetReplicates(true);
+
     SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArmComponent"));
     Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("CameraComponent"));
     InteractionRadiusSphere = CreateDefaultSubobject<USphereComponent>(TEXT("InteractionRadius"));
     InteractionRadiusSphere->SetSphereRadius(InteractionRadius);
-    EnergyComponent = CreateDefaultSubobject<UPS_EnergyComponent>(TEXT("EnergyComponent")); // TODO: delete after GAS implementation
-    HealthComponent = CreateDefaultSubobject<UPS_HealthComponent>(TEXT("HealthComponent")); // TODO: delete after GAS implementation
     WeaponComponent = CreateDefaultSubobject<UPS_WeaponComponent>(TEXT("WeaponComponent"));
 
     SpringArm->SetupAttachment(RootComponent);
@@ -47,11 +45,12 @@ APS_CharacterBase::APS_CharacterBase(const FObjectInitializer& ObjectInitializer
 void APS_CharacterBase::BeginPlay()
 {
     Super::BeginPlay();
+    
+    SetReplicateMovement(true);
     AnimInstance = Cast<UPS_AnimInstance>(GetMesh()->GetAnimInstance());
 
     PS_AbilitySystemComponent->OnZeroHealthDelegate.AddDynamic(this, &ThisClass::OnZeroHealthEnergy);
     PS_AbilitySystemComponent->OnZeroEnergyDelegate.AddDynamic(this, &ThisClass::OnZeroHealthEnergy);
-    PS_AbilitySystemComponent->ApplyBaseEnergyDrainEffect();
 }
 
 void APS_CharacterBase::OnInteractionRadiusOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
