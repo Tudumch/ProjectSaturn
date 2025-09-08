@@ -36,6 +36,7 @@ void APS_Prop_RechargingCapsule::StartInteract(ACharacter* Character)
 
 void APS_Prop_RechargingCapsule::StopInteract()
 {
+    if (!InteractingCharacter) return;
 
     if (UAbilitySystemComponent* AbilitySystemComponent = InteractingCharacter->GetComponentByClass<UAbilitySystemComponent>())
         AbilitySystemComponent->RemoveActiveGameplayEffect(ActiveGameplayEffect);
