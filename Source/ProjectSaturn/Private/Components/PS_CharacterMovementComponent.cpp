@@ -55,9 +55,9 @@ void UPS_CharacterMovementComponent::Look(const FInputActionValue& Value)
     // PlayerController->AddPitchInput(LookAxisValue.Y);
 }
 
-void UPS_CharacterMovementComponent::Run()
+void UPS_CharacterMovementComponent::Run(const FInputActionValue& Value)
 {
-    IsRunning = !IsRunning;
+    IsRunning = Value.Get<bool>();
     IsRunning ? MaxWalkSpeed = MaxRunSpeed : MaxWalkSpeed = MaxWalkSpeedCached;
 }
 

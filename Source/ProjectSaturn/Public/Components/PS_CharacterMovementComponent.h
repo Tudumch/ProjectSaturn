@@ -20,7 +20,7 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Movement")
     void Look(const FInputActionValue& Value);
     UFUNCTION(BlueprintCallable, Category = "Movement")
-    void Run();
+    void Run(const FInputActionValue& Value);
 
 protected:
     UPROPERTY()

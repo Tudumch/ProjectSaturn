@@ -5,6 +5,7 @@
 
 #include "EnhancedInputSubSystems.h"
 #include "EnhancedInputComponent.h"
+#include "InputMappingContext.h"
 #include "GameplayEffect.h"
 
 #include "Characters/PS_CharacterBase.h"
@@ -29,73 +30,67 @@ void APS_ControllerPlayer_Base::BeginPlay()
 void APS_ControllerPlayer_Base::SetupInputComponent()
 {
     Super::SetupInputComponent();
+    
+    UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(InputComponent);
+
+    const TArray<FEnhancedActionKeyMapping>& Mappings = InputMappingContext->GetMappings();
+    
+    // There may be more than one keymapping assigned to one action. So, first filter duplicate action entries to prevent multiple delegate bindings
+    TSet<const UInputAction*> UniqueActions;
+    for (const FEnhancedActionKeyMapping& Keymapping : Mappings)
+        UniqueActions.Add(Keymapping.Action);
+    
+    for (const UInputAction* UniqueAction : UniqueActions)
+        EnhancedInputComponent->BindAction(UniqueAction, ETriggerEvent::Triggered, Cast<UObject>(this), UniqueAction->GetFName());
 
     // MappingContext setup
     if (UEnhancedInputLocalPlayerSubsystem* EnhancedInputSubSystem =
         ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer()))
     {
-        EnhancedInputSubSystem->AddMappingContext(InputMappingContext, 2);
+        FModifyContextOptions Options;
+        Options.bForceImmediately = 1;
+        EnhancedInputSubSystem->AddMappingContext(InputMappingContext, 1, Options);
     }
-
-    // InputActions setup
-    UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(InputComponent);
-    if (!EnhancedInputComponent) return;
-
-    EnhancedInputComponent->BindAction(PauseIA, ETriggerEvent::Completed, this, &ThisClass::Pause);
-    EnhancedInputComponent->BindAction(MoveIA, ETriggerEvent::Triggered, this, &ThisClass::Move);
-    EnhancedInputComponent->BindAction(LookIA, ETriggerEvent::Triggered, this, &ThisClass::Look);
-    EnhancedInputComponent->BindAction(RunIA, ETriggerEvent::Started, this, &ThisClass::ToggleRun);
-    EnhancedInputComponent->BindAction(InteractIA, ETriggerEvent::Started, this, &ThisClass::Interact);
-    EnhancedInputComponent->BindAction(AttackBaseIA, ETriggerEvent::Started, this, &ThisClass::AttackBasePressed);
-    EnhancedInputComponent->BindAction(AttackBaseIA, ETriggerEvent::Completed, this, &ThisClass::AttackBaseReleased);
-    EnhancedInputComponent->BindAction(SaveIA, ETriggerEvent::Started, this, &ThisClass::Save);
-    EnhancedInputComponent->BindAction(LoadIA, ETriggerEvent::Started, this, &ThisClass::Load);
-
-    // Debug IAs
-    EnhancedInputComponent->BindAction(DebugAddHPEnergyIA, ETriggerEvent::Triggered, this,
-        &ThisClass::DebugAddHPEnergy);
 }
 
-void APS_ControllerPlayer_Base::Look(const FInputActionValue& Value)
+void APS_ControllerPlayer_Base::LookAction(const FInputActionValue& Value)
 {
     if (!PS_CharacterMovementComponent) return;
 
     PS_CharacterMovementComponent->Look(Value);
 }
 
-void APS_ControllerPlayer_Base::Move(const FInputActionValue& Value)
+void APS_ControllerPlayer_Base::MoveAction(const FInputActionValue& Value)
 {
     if (!PS_CharacterMovementComponent) return;
 
     PS_CharacterMovementComponent->Move(Value);
 }
 
-void APS_ControllerPlayer_Base::ToggleRun()
+void APS_ControllerPlayer_Base::SprintAction(const FInputActionValue& Value)
 {
     if (!PS_CharacterMovementComponent) return;
 
-    PS_CharacterMovementComponent->Run();
+    PS_CharacterMovementComponent->Run(Value);
 }
 
-void APS_ControllerPlayer_Base::Interact()
+void APS_ControllerPlayer_Base::InteractAction()
 {
     if (!PS_CharacterBase) return;
     PS_CharacterBase->Interact();
 }
 
-void APS_ControllerPlayer_Base::AttackBasePressed()
+void APS_ControllerPlayer_Base::AttackBaseAction(const FInputActionValue& Value)
 {
     if (!WeaponComponent || PS_CharacterBase->IsInteracting()) return;
-    WeaponComponent->AttackBaseOnPressed();
+
+    if (Value.Get<bool>())
+        WeaponComponent->AttackBaseOnPressed();
+    else
+        WeaponComponent->AttackBaseOnReleased();
 }
 
-void APS_ControllerPlayer_Base::AttackBaseReleased()
-{
-    if (!WeaponComponent) return;
-    WeaponComponent->AttackBaseOnReleased();
-}
-
-void APS_ControllerPlayer_Base::Save()
+void APS_ControllerPlayer_Base::SaveAction()
 {
     if (!GameModeBase) return;
 
@@ -105,7 +100,7 @@ void APS_ControllerPlayer_Base::Save()
     LoadSaveManager->Save();
 }
 
-void APS_ControllerPlayer_Base::Load()
+void APS_ControllerPlayer_Base::LoadAction()
 {
     if (!GameModeBase) return;
 
@@ -115,7 +110,7 @@ void APS_ControllerPlayer_Base::Load()
     LoadSaveManager->Load();
 }
 
-void APS_ControllerPlayer_Base::DebugAddHPEnergy(const FInputActionValue& Value)
+void APS_ControllerPlayer_Base::DebugAddHPEnergyAction(const FInputActionValue& Value)
 {
     float InputValue = Value.Get<FVector>().X;
 

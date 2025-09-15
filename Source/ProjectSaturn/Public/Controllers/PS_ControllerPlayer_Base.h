@@ -30,44 +30,23 @@ protected:
     UPROPERTY(EditAnywhere, Category = "Input")
     class UInputMappingContext* InputMappingContext;
 
-    UPROPERTY(EditAnywhere, Category = "Input")
-    UInputAction* PauseIA;
-    UPROPERTY(EditAnywhere, Category = "Input")
-    UInputAction* LookIA;
-    UPROPERTY(EditAnywhere, Category = "Input")
-    UInputAction* MoveIA;
-    UPROPERTY(EditAnywhere, Category = "Input")
-    UInputAction* RunIA;
-    UPROPERTY(EditAnywhere, Category = "Input")
-    UInputAction* InteractIA;
-    UPROPERTY(EditAnywhere, Category = "Input")
-    UInputAction* AttackBaseIA;
-    UPROPERTY(EditAnywhere, Category = "Input")
-    UInputAction* AttackAlternateIA;
-    UPROPERTY(EditAnywhere, Category = "Input")
-    UInputAction* SaveIA;
-    UPROPERTY(EditAnywhere, Category = "Input")
-    UInputAction* LoadIA;
-
     virtual void BeginPlay() override;
     virtual void SetupInputComponent() override;
 
     UFUNCTION(BlueprintCallable, Category = "Input")
-    virtual void Look(const FInputActionValue& Value);
+    virtual void LookAction(const FInputActionValue& Value);
     UFUNCTION(BlueprintCallable, Category = "Input")
-    virtual void Move(const FInputActionValue& Value);
+    virtual void MoveAction(const FInputActionValue& Value);
     UFUNCTION(BlueprintCallable, Category = "Input")
-    virtual void ToggleRun();
+    virtual void SprintAction(const FInputActionValue& Value);
     UFUNCTION(BlueprintCallable, Category = "Input")
-    virtual void Interact();
+    virtual void InteractAction();
     UFUNCTION(BlueprintCallable, Category = "Input")
-    virtual void AttackBasePressed();
+    virtual void AttackBaseAction(const FInputActionValue& Value);
     UFUNCTION(BlueprintCallable, Category = "Input")
-    virtual void AttackBaseReleased();
+    virtual void SaveAction();
     UFUNCTION(BlueprintCallable, Category = "Input")
-    virtual void Save();
-    UFUNCTION(BlueprintCallable, Category = "Input")
-    virtual void Load();
+    virtual void LoadAction();
 
     // Debug cheats
     UPROPERTY(EditAnywhere, Category = "Input")
@@ -75,7 +54,7 @@ protected:
 
     // Increase and decrease HP and Energy. Bound to "+" and "-" hotkeys
     UFUNCTION(BlueprintCallable, Category = "Input")
-    virtual void DebugAddHPEnergy(const FInputActionValue& Value);
+    virtual void DebugAddHPEnergyAction(const FInputActionValue& Value);
 
 private:
     void DefineCoreVariables();
