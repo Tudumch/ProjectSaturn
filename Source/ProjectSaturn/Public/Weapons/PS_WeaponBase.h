@@ -46,6 +46,8 @@ protected:
     USkeletalMeshComponent* SkeletalMeshComponent = nullptr;
     UPROPERTY()
     UMeshComponent* OwnerMeshComponent = nullptr;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    TSubclassOf<class UGameplayEffect> WeaponEffectClass = nullptr;
 
     UPROPERTY()
     FTimerHandle FireRateTimer;
