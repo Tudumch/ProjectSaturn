@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "AbilitySystemInterface.h"
-#include "PS_CharacterBase.generated.h"
+#include "PS_Character.generated.h"
 
 class UPS_AttributeSet;
 class UPS_AbilitySystemComponent;
@@ -13,12 +13,12 @@ class APS_Prop_Base;
 class APS_Prop_RechargingCapsule;
 
 UCLASS()
-class PROJECTSATURN_API APS_CharacterBase : public ACharacter, public IAbilitySystemInterface
+class PROJECTSATURN_API APS_Character : public ACharacter, public IAbilitySystemInterface
 {
     GENERATED_BODY()
 
 public:
-    APS_CharacterBase(const FObjectInitializer& ObjectInitializer);
+    APS_Character(const FObjectInitializer& ObjectInitializer);
 
     UFUNCTION(BlueprintCallable)
     void Interact();

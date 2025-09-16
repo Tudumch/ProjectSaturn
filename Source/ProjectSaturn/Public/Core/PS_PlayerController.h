@@ -6,22 +6,22 @@
 #include "GameFramework/PlayerController.h"
 #include "InputActionValue.h"
 #include "EnhancedInputComponent.h"
-#include "PS_ControllerPlayer_Base.generated.h"
+#include "PS_PlayerController.generated.h"
 
 
 /**
  * 
  */
 UCLASS()
-class PROJECTSATURN_API APS_ControllerPlayer_Base : public APlayerController
+class PROJECTSATURN_API APS_PlayerController : public APlayerController
 {
     GENERATED_BODY()
 
 protected:
     UPROPERTY()
-    class APS_CharacterBase* PS_CharacterBase;
+    class APS_Character* PS_CharacterBase;
     UPROPERTY()
-    class APS_GameModeBase* GameModeBase;
+    class APS_GameMode* GameModeBase;
     UPROPERTY()
     class UPS_CharacterMovementComponent* PS_CharacterMovementComponent;
     UPROPERTY()

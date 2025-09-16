@@ -1,24 +1,22 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Controllers/PS_ControllerPlayer_Base.h"
+#include "Core/PS_PlayerController.h"
 
 #include "EnhancedInputSubSystems.h"
 #include "EnhancedInputComponent.h"
 #include "InputMappingContext.h"
 #include "GameplayEffect.h"
 
-#include "Characters/PS_CharacterBase.h"
+#include "Core/PS_Character.h"
 #include "Components/PS_CharacterMovementComponent.h"
-#include "PS_GameModeBase.h"
+#include "Core/PS_GameMode.h"
 #include "Components/PS_WeaponComponent.h"
 #include "GAS/PS_AttributeSet.h"
 #include "Systems/LoadSaveSystem/PS_LoadSaveManager.h"
 
 
-class UGameplayEffect;
-
-void APS_ControllerPlayer_Base::BeginPlay()
+void APS_PlayerController::BeginPlay()
 {
     Super::BeginPlay();
 
@@ -27,7 +25,7 @@ void APS_ControllerPlayer_Base::BeginPlay()
     SetShowMouseCursor(true);
 }
 
-void APS_ControllerPlayer_Base::SetupInputComponent()
+void APS_PlayerController::SetupInputComponent()
 {
     Super::SetupInputComponent();
     
@@ -53,34 +51,34 @@ void APS_ControllerPlayer_Base::SetupInputComponent()
     }
 }
 
-void APS_ControllerPlayer_Base::LookAction(const FInputActionValue& Value)
+void APS_PlayerController::LookAction(const FInputActionValue& Value)
 {
     if (!PS_CharacterMovementComponent) return;
 
     PS_CharacterMovementComponent->Look(Value);
 }
 
-void APS_ControllerPlayer_Base::MoveAction(const FInputActionValue& Value)
+void APS_PlayerController::MoveAction(const FInputActionValue& Value)
 {
     if (!PS_CharacterMovementComponent) return;
 
     PS_CharacterMovementComponent->Move(Value);
 }
 
-void APS_ControllerPlayer_Base::SprintAction(const FInputActionValue& Value)
+void APS_PlayerController::SprintAction(const FInputActionValue& Value)
 {
     if (!PS_CharacterMovementComponent) return;
 
     PS_CharacterMovementComponent->Run(Value);
 }
 
-void APS_ControllerPlayer_Base::InteractAction()
+void APS_PlayerController::InteractAction()
 {
     if (!PS_CharacterBase) return;
     PS_CharacterBase->Interact();
 }
 
-void APS_ControllerPlayer_Base::AttackBaseAction(const FInputActionValue& Value)
+void APS_PlayerController::AttackBaseAction(const FInputActionValue& Value)
 {
     if (!WeaponComponent || PS_CharacterBase->IsInteracting()) return;
 
@@ -90,7 +88,7 @@ void APS_ControllerPlayer_Base::AttackBaseAction(const FInputActionValue& Value)
         WeaponComponent->AttackBaseOnReleased();
 }
 
-void APS_ControllerPlayer_Base::SaveAction()
+void APS_PlayerController::SaveAction()
 {
     if (!GameModeBase) return;
 
@@ -100,7 +98,7 @@ void APS_ControllerPlayer_Base::SaveAction()
     LoadSaveManager->Save();
 }
 
-void APS_ControllerPlayer_Base::LoadAction()
+void APS_PlayerController::LoadAction()
 {
     if (!GameModeBase) return;
 
@@ -110,7 +108,7 @@ void APS_ControllerPlayer_Base::LoadAction()
     LoadSaveManager->Load();
 }
 
-void APS_ControllerPlayer_Base::DebugAddHPEnergyAction(const FInputActionValue& Value)
+void APS_PlayerController::DebugAddHPEnergyAction(const FInputActionValue& Value)
 {
     float InputValue = Value.Get<FVector>().X;
 
@@ -144,10 +142,10 @@ void APS_ControllerPlayer_Base::DebugAddHPEnergyAction(const FInputActionValue& 
     }
 }
 
-void APS_ControllerPlayer_Base::DefineCoreVariables()
+void APS_PlayerController::DefineCoreVariables()
 {
-    GameModeBase = Cast<APS_GameModeBase>(GetWorld()->GetAuthGameMode());
-    PS_CharacterBase = Cast<APS_CharacterBase>(GetPawn());
+    GameModeBase = Cast<APS_GameMode>(GetWorld()->GetAuthGameMode());
+    PS_CharacterBase = Cast<APS_Character>(GetPawn());
     if (!PS_CharacterBase) return;
 
     PS_CharacterMovementComponent = PS_CharacterBase->FindComponentByClass<UPS_CharacterMovementComponent>();

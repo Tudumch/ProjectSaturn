@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Characters/PS_CharacterBase.h"
+#include "Core/PS_Character.h"
 
 #include "Animation/PS_AnimInstance.h"
 #include "Components/PS_CharacterMovementComponent.h"
@@ -15,7 +15,7 @@
 #include "GAS/PS_AbilitySystemComponent.h"
 #include "GAS/PS_AttributeSet.h"
 
-APS_CharacterBase::APS_CharacterBase(const FObjectInitializer& ObjectInitializer)
+APS_Character::APS_Character(const FObjectInitializer& ObjectInitializer)
     : Super(ObjectInitializer.SetDefaultSubobjectClass<UPS_CharacterMovementComponent>(
         ACharacter::CharacterMovementComponentName))
 {
@@ -37,12 +37,12 @@ APS_CharacterBase::APS_CharacterBase(const FObjectInitializer& ObjectInitializer
     PS_AttributeSet = CreateDefaultSubobject<UPS_AttributeSet>(TEXT("AttributeSet"));
 
     InteractionRadiusSphere->OnComponentBeginOverlap.AddDynamic(this,
-        &APS_CharacterBase::OnInteractionRadiusOverlapBegin);
-    InteractionRadiusSphere->OnComponentEndOverlap.AddDynamic(this, &APS_CharacterBase::OnInteractionRadiusOverlapEnd);
+        &APS_Character::OnInteractionRadiusOverlapBegin);
+    InteractionRadiusSphere->OnComponentEndOverlap.AddDynamic(this, &APS_Character::OnInteractionRadiusOverlapEnd);
 }
 
 
-void APS_CharacterBase::BeginPlay()
+void APS_Character::BeginPlay()
 {
     Super::BeginPlay();
     
@@ -53,7 +53,7 @@ void APS_CharacterBase::BeginPlay()
     PS_AbilitySystemComponent->OnZeroEnergyDelegate.AddDynamic(this, &ThisClass::OnZeroHealthEnergy);
 }
 
-void APS_CharacterBase::OnInteractionRadiusOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
+void APS_Character::OnInteractionRadiusOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
     UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
     if (OtherActor == this) return;
@@ -63,7 +63,7 @@ void APS_CharacterBase::OnInteractionRadiusOverlapBegin(UPrimitiveComponent* Ove
         NearbyInteractableProp->ShowTooltip(true);
 }
 
-void APS_CharacterBase::OnInteractionRadiusOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
+void APS_Character::OnInteractionRadiusOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
     UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
     if (OtherActor == this) return;
@@ -75,14 +75,14 @@ void APS_CharacterBase::OnInteractionRadiusOverlapEnd(UPrimitiveComponent* Overl
     }
 }
 
-void APS_CharacterBase::Interact()
+void APS_Character::Interact()
 {
     if (!NearbyInteractableProp) return;
 
     bIsInteracting ? EndInteraction() : StartInteraction();
 }
 
-void APS_CharacterBase::StartRespawnSequence()
+void APS_Character::StartRespawnSequence()
 {
     if (DisableSpawnAnimation) return;
 
@@ -91,7 +91,7 @@ void APS_CharacterBase::StartRespawnSequence()
     // delay for AnimInstance initialization
 }
 
-void APS_CharacterBase::StartDeathSequence()
+void APS_Character::StartDeathSequence()
 {
     bIsInteracting = true;
 
@@ -108,7 +108,7 @@ void APS_CharacterBase::StartDeathSequence()
     }
 }
 
-void APS_CharacterBase::StartInteraction()
+void APS_Character::StartInteraction()
 {
     bIsInteracting = true;
 
@@ -123,7 +123,7 @@ void APS_CharacterBase::StartInteraction()
     this->SetActorRotation(PropInteractionPoint.GetRotation());
 }
 
-void APS_CharacterBase::EndInteraction()
+void APS_Character::EndInteraction()
 {
     if (!NearbyInteractableProp)
     {
@@ -140,24 +140,24 @@ void APS_CharacterBase::EndInteraction()
         MontageDuration, false);
 }
 
-void APS_CharacterBase::OnFinishPlayStartingAnimMontage()
+void APS_Character::OnFinishPlayStartingAnimMontage()
 {
     NearbyInteractableProp->StartInteract(this);
     GetWorldTimerManager().ClearTimer(MontageDurationTimer);
 }
 
-void APS_CharacterBase::OnFinishPlayEndingAnimMontage()
+void APS_Character::OnFinishPlayEndingAnimMontage()
 {
     bIsInteracting = false;
     GetWorldTimerManager().ClearTimer(MontageDurationTimer);
 }
 
-void APS_CharacterBase::OnZeroHealthEnergy(AActor* Actor)
+void APS_Character::OnZeroHealthEnergy(AActor* Actor)
 {
     StartDeathSequence();
 }
 
-UAbilitySystemComponent* APS_CharacterBase::GetAbilitySystemComponent() const 
+UAbilitySystemComponent* APS_Character::GetAbilitySystemComponent() const 
 {
     return PS_AbilitySystemComponent;
 }

@@ -5,7 +5,7 @@
 #include "EnhancedInputComponent.h"
 #include "GameplayEffect.h"
 
-#include "Characters/PS_CharacterBase.h"
+#include "Core/PS_Character.h"
 #include "GAS/PS_AttributeSet.h"
 
 void UPS_CharacterMovementComponent::Move(const FInputActionValue& Value)
@@ -66,7 +66,7 @@ void UPS_CharacterMovementComponent::BeginPlay()
     Super::BeginPlay();
 
     PlayerController = Cast<APlayerController>(GetController());
-    OwnerCharacter = Cast<APS_CharacterBase>(GetOwner());
+    OwnerCharacter = Cast<APS_Character>(GetOwner());
     if (OwnerCharacter)
         AbilitySystemComponent = OwnerCharacter->GetAbilitySystemComponent();
     

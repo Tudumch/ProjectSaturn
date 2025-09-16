@@ -3,7 +3,7 @@
 
 #include "Systems/PS_PlayerDeathRespawnManager.h"
 
-#include "Characters/PS_CharacterBase.h"
+#include "Core/PS_Character.h"
 #include "GAS/PS_AbilitySystemComponent.h"
 #include "GAS/PS_AttributeSet.h"
 #include "Kismet/GameplayStatics.h"
@@ -13,7 +13,7 @@ void UPS_PlayerDeathRespawnManager::SpawnPlayer(APlayerController* PlayerControl
 {
     if (!PlayerController) return;
 
-    APS_CharacterBase* Character = Cast<APS_CharacterBase>(PlayerController->GetCharacter());
+    APS_Character* Character = Cast<APS_Character>(PlayerController->GetCharacter());
     if (Character == nullptr) return;
 
     if (UPS_AbilitySystemComponent* AbilitySystemComponent = Cast<UPS_AbilitySystemComponent>(Character->GetAbilitySystemComponent()))
@@ -34,7 +34,7 @@ void UPS_PlayerDeathRespawnManager::RespawnPlayer(APlayerController* PlayerContr
     if (RechargingCapsules.Num() == 0) return;
     const APS_Prop_RechargingCapsule* RechargingCapsule = Cast<APS_Prop_RechargingCapsule>(RechargingCapsules[0]);
 
-    APS_CharacterBase* Character = Cast<APS_CharacterBase>(PlayerController->GetCharacter());
+    APS_Character* Character = Cast<APS_Character>(PlayerController->GetCharacter());
     if (Character == nullptr) return;
 
     if (UPS_AbilitySystemComponent* AbilitySystemComponent = Cast<UPS_AbilitySystemComponent>(Character->GetAbilitySystemComponent()))
@@ -56,7 +56,7 @@ void UPS_PlayerDeathRespawnManager::OnZeroHealthEnergy(AActor* Actor)
 {
     if (!Actor) return;
 
-    const APS_CharacterBase* Character = Cast<APS_CharacterBase>(Actor);
+    const APS_Character* Character = Cast<APS_Character>(Actor);
     if (!Character) return;
 
     const float DeathSequenceLength = Character->GetDeathAnimMontage()->GetPlayLength();

@@ -1,13 +1,13 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "PS_GameModeBase.h"
+#include "Core/PS_GameMode.h"
 
 #include "Kismet/GameplayStatics.h"
 #include "Systems/PS_PlayerDeathRespawnManager.h"
 #include "Systems/LoadSaveSystem/PS_LoadSaveManager.h"
 
-void APS_GameModeBase::BeginPlay()
+void APS_GameMode::BeginPlay()
 {
     Super::BeginPlay();
 

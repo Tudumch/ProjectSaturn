@@ -26,7 +26,7 @@ protected:
     UPROPERTY()
     APlayerController* PlayerController;
     UPROPERTY()
-    class APS_CharacterBase* OwnerCharacter;
+    class APS_Character* OwnerCharacter;
     
     UPROPERTY()
     class UAbilitySystemComponent* AbilitySystemComponent;
