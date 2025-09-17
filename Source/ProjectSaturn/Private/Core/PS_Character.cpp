@@ -7,6 +7,7 @@
 #include "Components/PS_CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
+#include "EnhancedInputComponent.h"
 
 #include "Components/PS_WeaponComponent.h"
 #include "Components/SphereComponent.h"
@@ -33,8 +34,8 @@ APS_Character::APS_Character(const FObjectInitializer& ObjectInitializer)
     InteractionRadiusSphere->SetupAttachment(RootComponent);
     Camera->SetupAttachment(SpringArm, USpringArmComponent::SocketName);
 
-    PS_AbilitySystemComponent = CreateDefaultSubobject<UPS_AbilitySystemComponent>(TEXT("AbilitySystemComponent"));
-    PS_AttributeSet = CreateDefaultSubobject<UPS_AttributeSet>(TEXT("AttributeSet"));
+    AbilitySystemComponent = CreateDefaultSubobject<UPS_AbilitySystemComponent>(TEXT("AbilitySystemComponent"));
+    AttributeSet = CreateDefaultSubobject<UPS_AttributeSet>(TEXT("AttributeSet"));
 
     InteractionRadiusSphere->OnComponentBeginOverlap.AddDynamic(this,
         &APS_Character::OnInteractionRadiusOverlapBegin);
@@ -48,9 +49,10 @@ void APS_Character::BeginPlay()
     
     SetReplicateMovement(true);
     AnimInstance = Cast<UPS_AnimInstance>(GetMesh()->GetAnimInstance());
+    MaxWalkSpeedCached = GetCharacterMovement()->MaxWalkSpeed;
 
-    PS_AbilitySystemComponent->OnZeroHealthDelegate.AddDynamic(this, &ThisClass::OnZeroHealthEnergy);
-    PS_AbilitySystemComponent->OnZeroEnergyDelegate.AddDynamic(this, &ThisClass::OnZeroHealthEnergy);
+    AbilitySystemComponent->OnZeroHealthDelegate.AddDynamic(this, &ThisClass::OnZeroHealthEnergy);
+    AbilitySystemComponent->OnZeroEnergyDelegate.AddDynamic(this, &ThisClass::OnZeroHealthEnergy);
 }
 
 void APS_Character::OnInteractionRadiusOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
@@ -157,7 +159,81 @@ void APS_Character::OnZeroHealthEnergy(AActor* Actor)
     StartDeathSequence();
 }
 
+void APS_Character::ApplyEnergyDrainEffect(const float EnergyDrainAmount) const
+{
+    if (!AbilitySystemComponent) return;
+    
+    UGameplayEffect* EnergyDrainEffect = NewObject<UGameplayEffect>(GetTransientPackage(), FName(TEXT("MovementEnergyDrainEffect")));
+    EnergyDrainEffect->DurationPolicy = EGameplayEffectDurationType::Instant;
+
+    FGameplayModifierInfo ModifierInfo;
+    ModifierInfo.Attribute = UPS_AttributeSet::GetEnergyAttribute();
+    ModifierInfo.ModifierOp = EGameplayModOp::Additive;
+    ModifierInfo.ModifierMagnitude = FGameplayEffectModifierMagnitude(FScalableFloat(-EnergyDrainAmount));
+
+    EnergyDrainEffect->Modifiers.Add(ModifierInfo);
+
+    AbilitySystemComponent->ApplyGameplayEffectToSelf(EnergyDrainEffect, 1.0f, AbilitySystemComponent->MakeEffectContext());
+}
+
+void APS_Character::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
+{
+    Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+    
+    DOREPLIFETIME(APS_Character, IsRunning);
+}
+
 UAbilitySystemComponent* APS_Character::GetAbilitySystemComponent() const 
 {
-    return PS_AbilitySystemComponent;
+    return AbilitySystemComponent;
+}
+
+void APS_Character::Move(const FInputActionValue& Value)
+{
+    if(IsInteracting()) return;
+
+    float EnergyNeeded;
+    IsRunning ? EnergyNeeded = EnergyForRunning : EnergyNeeded = EnergyForWalking;
+
+    if (AbilitySystemComponent)
+    {
+        bool bIsAttrValid = false;
+        float CurrentEnergy = AbilitySystemComponent->GetGameplayAttributeValue(UPS_AttributeSet::GetEnergyAttribute(), bIsAttrValid);
+        
+        if (!bIsAttrValid || CurrentEnergy < EnergyNeeded)
+            return;
+    }
+
+    const FVector2D MovementVector = Value.Get<FVector2D>();
+    const FRotator Rotation = GetController()->GetControlRotation();
+    const FRotator YawRotation(0.f, Rotation.Yaw, 0.f);
+
+    const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+    AddMovementInput(ForwardDirection, MovementVector.X);
+
+    const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+    AddMovementInput(RightDirection, MovementVector.Y);
+
+    ApplyEnergyDrainEffect(EnergyNeeded);
+}
+
+void APS_Character::Run(const FInputActionValue& Value)
+{
+    IsRunning = Value.Get<bool>();
+
+    if (!GetOwner()->HasAuthority())
+        Server_Run(IsRunning);
+    else
+        Multicast_Run(IsRunning);
+}
+
+void APS_Character::Server_Run_Implementation(const bool bWantsToRun)
+{
+    Multicast_Run(bWantsToRun);
+}
+
+void APS_Character::Multicast_Run_Implementation(const bool bWantsToRun)
+{
+    IsRunning = bWantsToRun;
+    GetCharacterMovement()->MaxWalkSpeed = bWantsToRun ? MaxRunSpeed : MaxWalkSpeedCached;
 }

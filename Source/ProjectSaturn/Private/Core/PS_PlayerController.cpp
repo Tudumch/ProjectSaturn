@@ -53,34 +53,29 @@ void APS_PlayerController::SetupInputComponent()
 
 void APS_PlayerController::LookAction(const FInputActionValue& Value)
 {
-    if (!PS_CharacterMovementComponent) return;
-
-    PS_CharacterMovementComponent->Look(Value);
 }
 
 void APS_PlayerController::MoveAction(const FInputActionValue& Value)
 {
-    if (!PS_CharacterMovementComponent) return;
-
-    PS_CharacterMovementComponent->Move(Value);
+    if (!PS_Character) return;
+    PS_Character->Move(Value);
 }
 
 void APS_PlayerController::SprintAction(const FInputActionValue& Value)
 {
-    if (!PS_CharacterMovementComponent) return;
-
-    PS_CharacterMovementComponent->Run(Value);
+    if (!PS_Character) return;
+    PS_Character->Run(Value);
 }
 
 void APS_PlayerController::InteractAction()
 {
-    if (!PS_CharacterBase) return;
-    PS_CharacterBase->Interact();
+    if (!PS_Character) return;
+    PS_Character->Interact();
 }
 
 void APS_PlayerController::AttackBaseAction(const FInputActionValue& Value)
 {
-    if (!WeaponComponent || PS_CharacterBase->IsInteracting()) return;
+    if (!WeaponComponent || PS_Character->IsInteracting()) return;
 
     if (Value.Get<bool>())
         WeaponComponent->AttackBaseOnPressed();
@@ -112,7 +107,7 @@ void APS_PlayerController::DebugAddHPEnergyAction(const FInputActionValue& Value
 {
     float InputValue = Value.Get<FVector>().X;
 
-    if (UAbilitySystemComponent* AbilitySystemComponent = PS_CharacterBase->GetAbilitySystemComponent())
+    if (UAbilitySystemComponent* AbilitySystemComponent = PS_Character->GetAbilitySystemComponent())
     {
         // HP
         UGameplayEffect* HP_Effect = NewObject<UGameplayEffect>(GetTransientPackage(), FName(TEXT("MovementEnergyDrainEffect")));
@@ -145,9 +140,9 @@ void APS_PlayerController::DebugAddHPEnergyAction(const FInputActionValue& Value
 void APS_PlayerController::DefineCoreVariables()
 {
     GameModeBase = Cast<APS_GameMode>(GetWorld()->GetAuthGameMode());
-    PS_CharacterBase = Cast<APS_Character>(GetPawn());
-    if (!PS_CharacterBase) return;
+    PS_Character = Cast<APS_Character>(GetPawn());
+    if (!PS_Character) return;
 
-    PS_CharacterMovementComponent = PS_CharacterBase->FindComponentByClass<UPS_CharacterMovementComponent>();
-    WeaponComponent = PS_CharacterBase->FindComponentByClass<UPS_WeaponComponent>();
+    PS_CharacterMovementComponent = PS_Character->FindComponentByClass<UPS_CharacterMovementComponent>();
+    WeaponComponent = PS_Character->FindComponentByClass<UPS_WeaponComponent>();
 }

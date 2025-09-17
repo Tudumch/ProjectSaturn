@@ -19,7 +19,7 @@ class PROJECTSATURN_API APS_PlayerController : public APlayerController
 
 protected:
     UPROPERTY()
-    class APS_Character* PS_CharacterBase;
+    class APS_Character* PS_Character;
     UPROPERTY()
     class APS_GameMode* GameModeBase;
     UPROPERTY()

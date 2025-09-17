@@ -40,6 +40,15 @@ public:
     UFUNCTION()
     virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
+    // --------------------------------------------
+    // INPUTS
+    // --------------------------------------------
+    UFUNCTION(BlueprintCallable, Category = "Movement")
+    void Move(const FInputActionValue& Value);
+    
+    UFUNCTION(BlueprintCallable)
+    void Run(const FInputActionValue& Value);
+
 protected:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Debug")
     bool DisableSpawnAnimation = false;
@@ -63,14 +72,27 @@ protected:
     class UPS_WeaponComponent* WeaponComponent;
     
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    UPS_AbilitySystemComponent* PS_AbilitySystemComponent;
+    UPS_AbilitySystemComponent* AbilitySystemComponent;
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    UPS_AttributeSet* PS_AttributeSet;
+    UPS_AttributeSet* AttributeSet;
 
     UPROPERTY()
     APS_Prop_Base* NearbyInteractableProp; // stores last overlapped interactable prop
     UPROPERTY()
     FTimerHandle MontageDurationTimer;
+
+    UPROPERTY(EditAnywhere, Category = "Character Movement")
+    float MaxRunSpeed = 600.f;
+    UPROPERTY()
+    float MaxWalkSpeedCached = 600.f;
+    
+    UPROPERTY(EditAnywhere, Category = "Energy Consumption")
+    float EnergyForWalking = 0.1;
+    UPROPERTY(EditAnywhere, Category = "Energy Consumption")
+    float EnergyForRunning = 0.2;
+
+    UPROPERTY(Replicated)
+    bool IsRunning = false;
 
     virtual void BeginPlay() override;
 
@@ -92,5 +114,15 @@ protected:
     void OnFinishPlayEndingAnimMontage();
     UFUNCTION(BlueprintCallable)
     virtual void OnZeroHealthEnergy(AActor* Actor);
+
+    UFUNCTION()
+    void ApplyEnergyDrainEffect(const float EnergyDrainAmount) const;
+
+    UFUNCTION(Server, Reliable)
+    void Server_Run(bool bWantsToRun);
+    UFUNCTION(NetMulticast, Reliable)
+    void Multicast_Run(bool bWantsToRun);
+
+    virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 
 };
