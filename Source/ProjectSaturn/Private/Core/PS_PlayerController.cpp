@@ -73,7 +73,7 @@ void APS_PlayerController::InteractAction()
     PS_Character->Interact();
 }
 
-void APS_PlayerController::AttackBaseAction(const FInputActionValue& Value)
+void APS_PlayerController::PrimaryAction(const FInputActionValue& Value)
 {
     if (!WeaponComponent || PS_Character->IsInteracting()) return;
 
@@ -81,6 +81,11 @@ void APS_PlayerController::AttackBaseAction(const FInputActionValue& Value)
         WeaponComponent->AttackBaseOnPressed();
     else
         WeaponComponent->AttackBaseOnReleased();
+}
+
+void APS_PlayerController::SecondaryAction(const FInputActionValue& Value)
+{
+    PS_Character->TurnWithCursor(Value.Get<bool>());
 }
 
 void APS_PlayerController::SaveAction()

@@ -34,6 +34,9 @@ public:
     UFUNCTION(BlueprintPure)
     bool IsInteracting() const { return bIsInteracting; }
 
+    UFUNCTION(BlueprintCallable)
+    void TurnWithCursor(const bool bShouldTurn) { bShouldFollowCursor = bShouldTurn; };
+
     UFUNCTION(BlueprintPure)
     UAnimMontage* GetDeathAnimMontage() const { return DeathAnimation; };
     
@@ -59,6 +62,8 @@ protected:
     UAnimMontage* DeathAnimation;
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Interaction")
     float InteractionRadius = 200.f;
+    UPROPERTY()
+    bool bShouldFollowCursor = false;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     class USpringArmComponent* SpringArm;
@@ -91,10 +96,28 @@ protected:
     UPROPERTY(EditAnywhere, Category = "Energy Consumption")
     float EnergyForRunning = 0.2;
 
+    // REPLICATED VARIABLES AND METHODS
+    // float ReplicationTimer;
+    float ReplicationInterval = 0.02f; // in seconds
+    
     UPROPERTY(Replicated)
     bool IsRunning = false;
+    
+    UPROPERTY(ReplicatedUsing = OnRep_ReplicatedRotation)
+    FRotator ReplicatedRotation;
+    UFUNCTION()
+    void OnRep_ReplicatedRotation();
+    UFUNCTION(Server, Unreliable)
+    void Server_UpdateRotation(const FRotator NewRotation);
 
+    FTimerHandle ReplicationTimer;
+    UFUNCTION(BlueprintCallable)
+    void DoReplication();
+
+    // ------------------------------------
+    
     virtual void BeginPlay() override;
+    virtual void Tick(float DeltaTime) override;
 
     UFUNCTION(BlueprintCallable)
     void OnInteractionRadiusOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
@@ -122,6 +145,9 @@ protected:
     void Server_Run(bool bWantsToRun);
     UFUNCTION(NetMulticast, Reliable)
     void Multicast_Run(bool bWantsToRun);
+
+    UFUNCTION()
+    void RotateToMouseCursor();
 
     virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 

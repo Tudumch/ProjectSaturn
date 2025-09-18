@@ -20,7 +20,7 @@ APS_Character::APS_Character(const FObjectInitializer& ObjectInitializer)
     : Super(ObjectInitializer.SetDefaultSubobjectClass<UPS_CharacterMovementComponent>(
         ACharacter::CharacterMovementComponentName))
 {
-    PrimaryActorTick.bCanEverTick = false;
+    PrimaryActorTick.bCanEverTick = true;
 
     SetReplicates(true);
 
@@ -42,17 +42,42 @@ APS_Character::APS_Character(const FObjectInitializer& ObjectInitializer)
     InteractionRadiusSphere->OnComponentEndOverlap.AddDynamic(this, &APS_Character::OnInteractionRadiusOverlapEnd);
 }
 
+void APS_Character::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
+{
+    Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+    
+    DOREPLIFETIME(APS_Character, IsRunning);
+    DOREPLIFETIME(APS_Character, ReplicatedRotation);
+}
+
 
 void APS_Character::BeginPlay()
 {
     Super::BeginPlay();
     
-    SetReplicateMovement(true);
     AnimInstance = Cast<UPS_AnimInstance>(GetMesh()->GetAnimInstance());
     MaxWalkSpeedCached = GetCharacterMovement()->MaxWalkSpeed;
 
     AbilitySystemComponent->OnZeroHealthDelegate.AddDynamic(this, &ThisClass::OnZeroHealthEnergy);
     AbilitySystemComponent->OnZeroEnergyDelegate.AddDynamic(this, &ThisClass::OnZeroHealthEnergy);
+
+    if (IsLocallyControlled())
+        GetWorldTimerManager().SetTimer(ReplicationTimer, this, &ThisClass::DoReplication, ReplicationInterval, true);
+}
+
+void APS_Character::Tick(float DeltaTime)
+{
+    Super::Tick(DeltaTime);
+
+    if (IsLocallyControlled() && bShouldFollowCursor)
+        RotateToMouseCursor();
+}
+
+void APS_Character::DoReplication()
+{
+    if (!IsLocallyControlled()) return;
+
+    Server_UpdateRotation(GetActorRotation());
 }
 
 void APS_Character::OnInteractionRadiusOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
@@ -176,11 +201,51 @@ void APS_Character::ApplyEnergyDrainEffect(const float EnergyDrainAmount) const
     AbilitySystemComponent->ApplyGameplayEffectToSelf(EnergyDrainEffect, 1.0f, AbilitySystemComponent->MakeEffectContext());
 }
 
-void APS_Character::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
+void APS_Character::RotateToMouseCursor()
 {
-    Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-    
-    DOREPLIFETIME(APS_Character, IsRunning);
+    APlayerController* PlayerController = Cast<APlayerController>(GetController());
+    if (!PlayerController) return;
+
+    // Get mouse hit result
+    FHitResult HitResult;
+    bool bHitSuccessful = PlayerController->GetHitResultUnderCursor(
+        ECollisionChannel::ECC_Visibility,
+        true,
+        HitResult
+    );
+
+    if (bHitSuccessful)
+    {
+        FVector MouseWorldLocation = HitResult.Location;
+        
+        FVector Direction = MouseWorldLocation - GetActorLocation();
+        Direction.Z = 0; 
+        Direction.Normalize();
+
+        FRotator TargetRotation = Direction.Rotation();
+
+        // Rotation interpolation
+        FRotator CurrentRotation = GetActorRotation();
+        FRotator NewRotation = FMath::RInterpTo(
+            CurrentRotation,
+            TargetRotation,
+            GetWorld()->GetDeltaSeconds(),
+            100
+        );
+
+        SetActorRotation(FRotator(0, NewRotation.Yaw, 0));
+    }
+}
+
+void APS_Character::OnRep_ReplicatedRotation()
+{
+    SetActorRotation(ReplicatedRotation);
+}
+
+void APS_Character::Server_UpdateRotation_Implementation(const FRotator NewRotation)
+{
+    ReplicatedRotation = NewRotation;
+    SetActorRotation(ReplicatedRotation);
 }
 
 UAbilitySystemComponent* APS_Character::GetAbilitySystemComponent() const 

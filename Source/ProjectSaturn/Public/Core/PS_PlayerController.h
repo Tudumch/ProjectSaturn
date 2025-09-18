@@ -42,7 +42,9 @@ protected:
     UFUNCTION(BlueprintCallable, Category = "Input")
     virtual void InteractAction();
     UFUNCTION(BlueprintCallable, Category = "Input")
-    virtual void AttackBaseAction(const FInputActionValue& Value);
+    virtual void PrimaryAction(const FInputActionValue& Value);
+    UFUNCTION(BlueprintCallable, Category = "Input")
+    virtual void SecondaryAction(const FInputActionValue& Value);
     UFUNCTION(BlueprintCallable, Category = "Input")
     virtual void SaveAction();
     UFUNCTION(BlueprintCallable, Category = "Input")
