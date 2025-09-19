@@ -11,9 +11,11 @@
 APS_Prop_Base::APS_Prop_Base()
 {
 	PrimaryActorTick.bCanEverTick = false;
-    
+
+    Root = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Root"));
+    RootComponent = Root;
     StaticMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMesh"));
-    RootComponent = StaticMesh;
+    StaticMesh->SetupAttachment(Root);
     
     TextTooltip = CreateDefaultSubobject<UWidgetComponent>(TEXT("TextTooltip"));
     TextTooltip->SetupAttachment(RootComponent);

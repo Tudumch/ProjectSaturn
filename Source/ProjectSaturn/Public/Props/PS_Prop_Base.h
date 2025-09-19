@@ -41,6 +41,8 @@ public:
     FInteractionAnimationsStorage AnimationStorage;
     
 protected:
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    USceneComponent* Root;
     UPROPERTY()
     ACharacter* InteractingCharacter = nullptr;
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
