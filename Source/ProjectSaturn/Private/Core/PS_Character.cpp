@@ -31,6 +31,7 @@ APS_Character::APS_Character(const FObjectInitializer& ObjectInitializer)
     WeaponComponent = CreateDefaultSubobject<UPS_WeaponComponent>(TEXT("WeaponComponent"));
 
     SpringArm->SetupAttachment(RootComponent);
+    SpringArm->bDoCollisionTest = false;
     InteractionRadiusSphere->SetupAttachment(RootComponent);
     Camera->SetupAttachment(SpringArm, USpringArmComponent::SocketName);
 
