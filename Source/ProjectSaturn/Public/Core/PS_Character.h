@@ -43,6 +43,9 @@ public:
     UFUNCTION()
     virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
+    UFUNCTION(BlueprintPure)
+    bool IsDead() const { return bIsDead; }
+
     // --------------------------------------------
     // INPUTS
     // --------------------------------------------
@@ -57,6 +60,8 @@ protected:
     bool DisableSpawnAnimation = false;
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     bool bIsInteracting = false;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    bool bIsDead = false;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations")
     UAnimMontage* DeathAnimation;
@@ -92,9 +97,9 @@ protected:
     float MaxWalkSpeedCached = 600.f;
     
     UPROPERTY(EditAnywhere, Category = "Energy Consumption")
-    float EnergyForWalking = 0.1;
+    float EnergyForWalking = 0.01;
     UPROPERTY(EditAnywhere, Category = "Energy Consumption")
-    float EnergyForRunning = 0.2;
+    float EnergyForRunning = 0.02;
 
     // REPLICATED VARIABLES AND METHODS
     // float ReplicationTimer;

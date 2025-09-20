@@ -111,6 +111,7 @@ void APS_Character::Interact()
 
 void APS_Character::StartRespawnSequence()
 {
+    bIsDead = false;
     if (DisableSpawnAnimation) return;
 
     bIsInteracting = true;
@@ -128,7 +129,6 @@ void APS_Character::StartDeathSequence()
     const float SequenceLength = AnimInstance->Montage_Play(DeathAnimation);
 
     if (APlayerController* PlayerController = Cast<APlayerController>(GetController()))
-    // TODO: transfer this to CharacterPlayer class, when it will be created
     {
         PlayerController->PlayerCameraManager->StartCameraFade(0, 1, SequenceLength / 2, FLinearColor::Black, true,
             true);
@@ -181,6 +181,9 @@ void APS_Character::OnFinishPlayEndingAnimMontage()
 
 void APS_Character::OnZeroHealthEnergy(AActor* Actor)
 {
+    if (bIsDead) return;
+    bIsDead = true;
+    
     StartDeathSequence();
 }
 

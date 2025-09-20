@@ -3,6 +3,7 @@
 
 #include "GAS/PS_AbilitySystemComponent.h"
 
+#include "Core/PS_Character.h"
 #include "GAS/PS_AttributeSet.h"
 
 void UPS_AbilitySystemComponent::ApplyBaseEnergyDrainEffect()
@@ -42,6 +43,10 @@ void UPS_AbilitySystemComponent::BeginPlay()
 
 void UPS_AbilitySystemComponent::OnAttributeValueChanged(const FOnAttributeChangeData& AttributeChangeData)
 {
+    if (const APS_Character* Char = Cast<APS_Character>(GetOwner()))
+        if (Char->IsDead())
+            return;
+    
     if (AttributeChangeData.Attribute == UPS_AttributeSet::GetHealthAttribute() && AttributeChangeData.NewValue <= 0.f)
         OnZeroHealthDelegate.Broadcast(GetOwner());
     

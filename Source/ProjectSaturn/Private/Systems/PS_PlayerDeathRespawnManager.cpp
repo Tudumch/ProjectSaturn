@@ -27,6 +27,7 @@ void UPS_PlayerDeathRespawnManager::SpawnPlayer(APlayerController* PlayerControl
 
 void UPS_PlayerDeathRespawnManager::RespawnPlayer(APlayerController* PlayerController)
 {
+    UE_LOG(LogTemp, Display, TEXT("Starting Player Respawn sequence..."));
     if (!PlayerController) return;
 
     TArray<AActor*> RechargingCapsules;
