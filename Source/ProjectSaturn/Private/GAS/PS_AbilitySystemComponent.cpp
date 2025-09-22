@@ -5,6 +5,24 @@
 
 #include "Core/PS_Character.h"
 #include "GAS/PS_AttributeSet.h"
+#include "GAS/GameplayAbilities/GA_Combo.h"
+
+UPS_AbilitySystemComponent::UPS_AbilitySystemComponent()
+{
+    BasicAbilities.Add(UGA_Combo::StaticClass());
+}
+
+void UPS_AbilitySystemComponent::GiveInitialAbilities()
+{
+    if (!GetOwner() || !GetOwner()->HasAuthority())
+        return;
+
+    for (const TSubclassOf<UGameplayAbility> & AbilityClass : BasicAbilities)
+        GiveAbility(FGameplayAbilitySpec(AbilityClass, 1, -1, nullptr));
+    
+    for (const TSubclassOf<UGameplayAbility> & AbilityClass : GrantedAbilities)
+        GiveAbility(FGameplayAbilitySpec(AbilityClass, 1, -1, nullptr));
+}
 
 void UPS_AbilitySystemComponent::ApplyBaseEnergyDrainEffect()
 {
@@ -31,6 +49,9 @@ void UPS_AbilitySystemComponent::BeginPlay()
 {
     Super::BeginPlay();
 
+    if (!GetOwner() || !GetOwner()->HasAuthority())
+        return;
+    
     InitAbilityActorInfo(GetOwner(), GetOwner());
 
     const FGameplayAttribute HealthAttribute = UPS_AttributeSet::GetHealthAttribute();
@@ -38,6 +59,7 @@ void UPS_AbilitySystemComponent::BeginPlay()
     const FGameplayAttribute EnergyAttribute = UPS_AttributeSet::GetEnergyAttribute();
     GetGameplayAttributeValueChangeDelegate(EnergyAttribute).AddUObject(this, &ThisClass::OnAttributeValueChanged);
 
+    GiveInitialAbilities();
     ApplyBaseEnergyDrainEffect();
 }
 

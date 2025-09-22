@@ -18,12 +18,23 @@ class PROJECTSATURN_API UPS_AbilitySystemComponent : public UAbilitySystemCompon
 	GENERATED_BODY()
 
 public:
+    UPS_AbilitySystemComponent();
+    
+    void GiveInitialAbilities();
     void ApplyBaseEnergyDrainEffect();
+
+    UFUNCTION(BlueprintCallable)
+    TArray<TSubclassOf<UGameplayAbility>> GetBasicAbilities() { return BasicAbilities; }
 
     FOnZeroHealthDelegate OnZeroHealthDelegate;
     FOnZeroEnergyDelegate OnZeroEnergyDelegate;
 
 protected:
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GAS")
+    TArray<TSubclassOf<UGameplayAbility>> BasicAbilities;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GAS")
+    TArray<TSubclassOf<UGameplayAbility>> GrantedAbilities;
+    
     void BeginPlay() override;
 
     void OnAttributeValueChanged(const FOnAttributeChangeData & AttributeChangeData);
