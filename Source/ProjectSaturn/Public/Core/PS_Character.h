@@ -23,7 +23,7 @@ public:
     UFUNCTION(BlueprintCallable)
     void Interact();
 
-    // Imitates ending of interaction process with prop. It used when the player respawns.
+    // Imitates ending of interaction process with prop.
     UFUNCTION(BlueprintCallable)
     void StartRespawnSequence();
 
@@ -46,28 +46,25 @@ public:
     UFUNCTION(BlueprintPure)
     bool IsDead() const { return bIsDead; }
 
-    // --------------------------------------------
-    // INPUTS
-    // --------------------------------------------
-    UFUNCTION(BlueprintCallable, Category = "Movement")
+    UFUNCTION(BlueprintCallable)
     void Move(const FInputActionValue& Value);
     
     UFUNCTION(BlueprintCallable)
     void Run(const FInputActionValue& Value);
 
 protected:
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Debug")
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ATTRIBUTES|Debug")
     bool DisableSpawnAnimation = false;
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    UPROPERTY(BlueprintReadWrite)
     bool bIsInteracting = false;
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    UPROPERTY(BlueprintReadWrite)
     bool bIsDead = false;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations")
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
     UAnimMontage* DeathAnimation;
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Interaction")
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ATTRIBUTES")
     float InteractionRadius = 200.f;
-    UPROPERTY()
+    UPROPERTY(BlueprintReadWrite)
     bool bShouldFollowCursor = false;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -83,26 +80,25 @@ protected:
     
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     UPS_AbilitySystemComponent* AbilitySystemComponent;
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ATTRIBUTES|GAS")
     UPS_AttributeSet* AttributeSet;
 
-    UPROPERTY()
+    UPROPERTY(BlueprintReadWrite)
     APS_Prop_Base* NearbyInteractableProp; // stores last overlapped interactable prop
     UPROPERTY()
     FTimerHandle MontageDurationTimer;
 
-    UPROPERTY(EditAnywhere, Category = "Character Movement")
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ATTRIBUTES")
     float MaxRunSpeed = 600.f;
-    UPROPERTY()
+    UPROPERTY(BlueprintReadWrite)
     float MaxWalkSpeedCached = 600.f;
     
-    UPROPERTY(EditAnywhere, Category = "Energy Consumption")
+    UPROPERTY(EditAnywhere, Category = "ATTRIBUTES|Energy Consumption")
     float EnergyForWalking = 0.01;
-    UPROPERTY(EditAnywhere, Category = "Energy Consumption")
+    UPROPERTY(EditAnywhere, Category = "ATTRIBUTES|Energy Consumption")
     float EnergyForRunning = 0.02;
 
     // REPLICATED VARIABLES AND METHODS
-    // float ReplicationTimer;
     float ReplicationInterval = 0.02f; // in seconds
     
     UPROPERTY(Replicated)
