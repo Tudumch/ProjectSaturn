@@ -78,7 +78,12 @@ void APS_PlayerController::PrimaryAction(const FInputActionValue& Value)
     if (!WeaponComponent || PS_Character->IsInteracting()) return;
 
     if (Value.Get<bool>())
-        WeaponComponent->AttackBaseOnPressed();
+    {
+        if (UAbilitySystemComponent* AbilitySystemComponent = PS_Character->GetAbilitySystemComponent())
+            AbilitySystemComponent->PressInputID((uint8)EPSAbilityInputID::PrimaryAction);
+        else
+            WeaponComponent->AttackBaseOnPressed();
+    }
     else
         WeaponComponent->AttackBaseOnReleased();
 }

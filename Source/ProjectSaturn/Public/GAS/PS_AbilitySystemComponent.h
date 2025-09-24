@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "AbilitySystemComponent.h"
+#include "PS_AbilitySystemTypes.h"
 #include "PS_AbilitySystemComponent.generated.h"
 
 /**
@@ -24,16 +25,16 @@ public:
     void ApplyBaseEnergyDrainEffect();
 
     UFUNCTION(BlueprintCallable)
-    TArray<TSubclassOf<UGameplayAbility>> GetBasicAbilities() { return BasicAbilities; }
+    TMap<EPSAbilityInputID, TSubclassOf<UGameplayAbility>> GetBasicAbilities() { return BasicAbilities; }
 
     FOnZeroHealthDelegate OnZeroHealthDelegate;
     FOnZeroEnergyDelegate OnZeroEnergyDelegate;
 
 protected:
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GAS")
-    TArray<TSubclassOf<UGameplayAbility>> BasicAbilities;
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GAS")
-    TArray<TSubclassOf<UGameplayAbility>> GrantedAbilities;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ATTRIBUTES")
+    TMap<EPSAbilityInputID, TSubclassOf<UGameplayAbility>> BasicAbilities;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ATTRIBUTES")
+    TMap<EPSAbilityInputID, TSubclassOf<UGameplayAbility>> GrantedAbilities;
     
     void BeginPlay() override;
 

@@ -9,7 +9,7 @@
 
 UPS_AbilitySystemComponent::UPS_AbilitySystemComponent()
 {
-    BasicAbilities.Add(UGA_Combo::StaticClass());
+    BasicAbilities.Add(EPSAbilityInputID::PrimaryAction, UGA_Combo::StaticClass());
 }
 
 void UPS_AbilitySystemComponent::GiveInitialAbilities()
@@ -17,11 +17,11 @@ void UPS_AbilitySystemComponent::GiveInitialAbilities()
     if (!GetOwner() || !GetOwner()->HasAuthority())
         return;
 
-    for (const TSubclassOf<UGameplayAbility> & AbilityClass : BasicAbilities)
-        GiveAbility(FGameplayAbilitySpec(AbilityClass, 1, -1, nullptr));
+    for (TPair<EPSAbilityInputID, TSubclassOf<UGameplayAbility>> & AbilityPair : BasicAbilities)
+        GiveAbility(FGameplayAbilitySpec(AbilityPair.Value, 1, (int8)AbilityPair.Key, nullptr));
     
-    for (const TSubclassOf<UGameplayAbility> & AbilityClass : GrantedAbilities)
-        GiveAbility(FGameplayAbilitySpec(AbilityClass, 1, -1, nullptr));
+    for (TPair<EPSAbilityInputID, TSubclassOf<UGameplayAbility>> & AbilityPair : BasicAbilities)
+        GiveAbility(FGameplayAbilitySpec(AbilityPair.Value, 1, (uint8)AbilityPair.Key, nullptr));
 }
 
 void UPS_AbilitySystemComponent::ApplyBaseEnergyDrainEffect()
