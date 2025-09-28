@@ -13,5 +13,7 @@ UCLASS()
 class PROJECTSATURN_API UPS_GameplayAbility : public UGameplayAbility
 {
 	GENERATED_BODY()
-	
+
+protected:
+    class UAnimInstance* GetAnimationInstance() const;
 };
