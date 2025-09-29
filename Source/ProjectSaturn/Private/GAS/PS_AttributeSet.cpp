@@ -5,6 +5,8 @@
 
 #include "Net/UnrealNetwork.h"
 
+#include "GameplayEffectExtension.h"
+
 UPS_AttributeSet::UPS_AttributeSet()
 {
     MaxHealth.SetBaseValue(100.0f);
@@ -27,6 +29,15 @@ void UPS_AttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute, f
     if (Attribute == GetEnergyAttribute())
         NewValue = FMath::Clamp(NewValue, 0.0f, GetMaxEnergy());
 }
+
+void UPS_AttributeSet::PostGameplayEffectExecute(const struct FGameplayEffectModCallbackData& Data)
+{
+    if (Data.EvaluatedData.Attribute == GetHealthAttribute())
+        SetHealth(FMath::Clamp(GetHealth(), 0.0f, GetMaxHealth()));
+    if (Data.EvaluatedData.Attribute == GetEnergyAttribute())
+        SetEnergy(FMath::Clamp(GetEnergy(), 0.0f, GetMaxEnergy()));
+}
+
 
 void UPS_AttributeSet::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
 {

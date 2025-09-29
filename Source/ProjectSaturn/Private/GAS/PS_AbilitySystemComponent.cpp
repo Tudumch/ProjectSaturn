@@ -29,20 +29,23 @@ void UPS_AbilitySystemComponent::ApplyBaseEnergyDrainEffect()
     if (!GetOwner()->HasAuthority())
         return;
     
-    UGameplayEffect* EnergyDrainEffect = NewObject<UGameplayEffect>(GetTransientPackage(), FName(TEXT("BaseEnergyDrainEffect")));
-    EnergyDrainEffect->DurationPolicy = EGameplayEffectDurationType::Infinite;
-    EnergyDrainEffect->Period = 1.0f; // Every second 
+    static UGameplayEffect* BaseEnergyDrainEffect = NewObject<UGameplayEffect>(GetTransientPackage(), FName(TEXT("BaseEnergyDrainEffect")));
+    BaseEnergyDrainEffect->DurationPolicy = EGameplayEffectDurationType::Infinite;
+    BaseEnergyDrainEffect->Period = 1.0f;
+    
+    FGameplayEffectSpecHandle SpecHandle = MakeOutgoingSpec(BaseEnergyDrainEffect->GetClass(), 1.0f, MakeEffectContext());
+    
+    if (SpecHandle.IsValid())
+    {
+        bool bAttributeValueValid = false;
+        const float EnergyDrainRate = GetGameplayAttributeValue(UPS_AttributeSet::GetEnergyBaseConsumptionRateAttribute(), bAttributeValueValid);
+        
+        FGameplayModifierInfo ModifierInfo;
+        ModifierInfo.ModifierMagnitude = FGameplayEffectModifierMagnitude(FScalableFloat(-EnergyDrainRate));
 
-    FGameplayModifierInfo ModifierInfo;
-    ModifierInfo.Attribute = UPS_AttributeSet::GetEnergyAttribute();
-    ModifierInfo.ModifierOp = EGameplayModOp::Additive;
-    bool bAttributeValueValid = false;
-    const float EnergyDrainRate = GetGameplayAttributeValue(UPS_AttributeSet::GetEnergyBaseConsumptionRateAttribute(), bAttributeValueValid);
-    ModifierInfo.ModifierMagnitude = FGameplayEffectModifierMagnitude(FScalableFloat(-EnergyDrainRate));
-    
-    EnergyDrainEffect->Modifiers.Add(ModifierInfo);
-    
-    ApplyGameplayEffectToSelf(EnergyDrainEffect, 1.0f, MakeEffectContext());
+        if (bAttributeValueValid)
+            ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
+    }
 }
 
 void UPS_AbilitySystemComponent::BeginPlay()

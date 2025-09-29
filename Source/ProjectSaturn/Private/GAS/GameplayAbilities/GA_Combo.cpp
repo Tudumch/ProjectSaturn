@@ -45,10 +45,10 @@ void UGA_Combo::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const F
         PlayComboMontageTask->OnCompleted.AddDynamic(this, &ThisClass::K2_EndAbility); // calls notify when montage ends play
         PlayComboMontageTask->OnInterrupted.AddDynamic(this, &ThisClass::K2_EndAbility); // calls notify when montage ends play
         PlayComboMontageTask->ReadyForActivation();
-
+        
         UAbilityTask_WaitGameplayEvent* WaitComboChangeEventTask = UAbilityTask_WaitGameplayEvent::WaitGameplayEvent
         (this, GetComboChangedEventTag(), nullptr, false, false);
-
+        
         WaitComboChangeEventTask->EventReceived.AddDynamic(this, &ThisClass::ComboChangedEventReceived);
         WaitComboChangeEventTask->ReadyForActivation();
     }
