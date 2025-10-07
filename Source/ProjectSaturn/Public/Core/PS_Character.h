@@ -6,6 +6,8 @@
 #include "GameFramework/Character.h"
 #include "AbilitySystemInterface.h"
 #include "Interfaces/AttackerMelee.h"
+#include "KismetTraceUtils.h"
+#include "Library/PS_Structs.h"
 #include "PS_Character.generated.h"
 
 class UPS_AttributeSet;
@@ -57,8 +59,13 @@ public:
     void DoMeleeAttack() override;
 
 protected:
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ATTRIBUTES|Attack")
+    FMeleeAttackParams MeleeAttackParams;
+    
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ATTRIBUTES|Debug")
     bool DisableSpawnAnimation = false;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ATTRIBUTES|Debug")
+    TEnumAsByte<EDrawDebugTrace::Type> DrawDebugTraces = EDrawDebugTrace::ForDuration;
     UPROPERTY(BlueprintReadWrite)
     bool bIsInteracting = false;
     UPROPERTY(BlueprintReadWrite)

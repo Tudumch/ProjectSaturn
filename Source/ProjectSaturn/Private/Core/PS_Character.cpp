@@ -298,7 +298,31 @@ void APS_Character::Run(const FInputActionValue& Value)
 
 void APS_Character::DoMeleeAttack()
 {
-    UE_LOG(LogTemp, Warning, TEXT("Melee Attack from Character!"));
+    const FVector StartLocation = GetActorLocation() + GetActorRotation().RotateVector(FVector(0, 0, MeleeAttackParams.Height));
+    const FVector EndLocation = GetActorLocation() + GetActorRotation().RotateVector(FVector(MeleeAttackParams.Distance, 0, MeleeAttackParams.Height));
+    
+    TArray<FHitResult> HitResults;
+    
+    TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes;
+    ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_WorldStatic));
+    ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_WorldDynamic));
+    ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_Pawn));
+    
+    TArray<AActor*> ActorsToIgnore;
+    ActorsToIgnore.Add(this);
+
+    UKismetSystemLibrary::SphereTraceMultiForObjects(GetWorld(), StartLocation, EndLocation, MeleeAttackParams.TraceRadius, ObjectTypes, false, ActorsToIgnore, 
+    DrawDebugTraces, HitResults, true);
+
+    for (auto Hit : HitResults)
+    {
+        // TODO: need more advanced hit reaction animation
+        if (ACharacter* HitCharacter = Cast<ACharacter>(Hit.GetActor()))
+        {
+            const FVector LaunchVelocity = Hit.ImpactNormal * -100.0f + FVector(0, 0, 100.0f); 
+            HitCharacter->LaunchCharacter(LaunchVelocity, true, true);
+        }
+    }
 }
 
 void APS_Character::Server_Run_Implementation(const bool bWantsToRun)
