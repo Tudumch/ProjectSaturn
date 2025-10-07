@@ -296,6 +296,11 @@ void APS_Character::Run(const FInputActionValue& Value)
         Multicast_Run(IsRunning);
 }
 
+void APS_Character::DoMeleeAttack()
+{
+    UE_LOG(LogTemp, Warning, TEXT("Melee Attack from Character!"));
+}
+
 void APS_Character::Server_Run_Implementation(const bool bWantsToRun)
 {
     Multicast_Run(bWantsToRun);

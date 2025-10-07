@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "AbilitySystemInterface.h"
+#include "Interfaces/AttackerMelee.h"
 #include "PS_Character.generated.h"
 
 class UPS_AttributeSet;
@@ -13,7 +14,7 @@ class APS_Prop_Base;
 class APS_Prop_RechargingCapsule;
 
 UCLASS()
-class PROJECTSATURN_API APS_Character : public ACharacter, public IAbilitySystemInterface
+class PROJECTSATURN_API APS_Character : public ACharacter, public IAbilitySystemInterface, public IAttackerMelee
 {
     GENERATED_BODY()
 
@@ -51,6 +52,9 @@ public:
     
     UFUNCTION(BlueprintCallable)
     void Run(const FInputActionValue& Value);
+
+    UFUNCTION(BlueprintCallable)
+    void DoMeleeAttack() override;
 
 protected:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ATTRIBUTES|Debug")
