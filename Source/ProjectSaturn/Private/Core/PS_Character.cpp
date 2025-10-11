@@ -3,6 +3,7 @@
 
 #include "Core/PS_Character.h"
 
+#include "AbilitySystemBlueprintLibrary.h"
 #include "Animation/PS_AnimInstance.h"
 #include "Components/PS_CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -15,6 +16,7 @@
 
 #include "GAS/PS_AbilitySystemComponent.h"
 #include "GAS/PS_AttributeSet.h"
+#include "GAS/GameplayEffects/WeaponEffects/BareHandsAttackEffect.h"
 
 APS_Character::APS_Character(const FObjectInitializer& ObjectInitializer)
     : Super(ObjectInitializer.SetDefaultSubobjectClass<UPS_CharacterMovementComponent>(
@@ -321,6 +323,19 @@ void APS_Character::DoMeleeAttack()
         {
             const FVector LaunchVelocity = Hit.ImpactNormal * -100.0f + FVector(0, 0, 100.0f); 
             HitCharacter->LaunchCharacter(LaunchVelocity, true, true);
+        }
+
+        if (UAbilitySystemComponent* TargetAbilitySystemComponent = 
+        UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(Hit.GetActor()))
+        {
+            FGameplayEffectContextHandle ContextHandle = TargetAbilitySystemComponent->MakeEffectContext();
+            ContextHandle.AddSourceObject(this);
+
+            UClass* EffectClass = UBareHandsAttackEffect::StaticClass();
+            FGameplayEffectSpecHandle SpecHandle = TargetAbilitySystemComponent->MakeOutgoingSpec(EffectClass, 1, ContextHandle);
+            
+            if (SpecHandle.IsValid())
+                TargetAbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
         }
     }
 }

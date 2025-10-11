@@ -65,7 +65,7 @@ protected:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ATTRIBUTES|Debug")
     bool DisableSpawnAnimation = false;
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ATTRIBUTES|Debug")
-    TEnumAsByte<EDrawDebugTrace::Type> DrawDebugTraces = EDrawDebugTrace::ForDuration;
+    TEnumAsByte<EDrawDebugTrace::Type> DrawDebugTraces = EDrawDebugTrace::None;
     UPROPERTY(BlueprintReadWrite)
     bool bIsInteracting = false;
     UPROPERTY(BlueprintReadWrite)

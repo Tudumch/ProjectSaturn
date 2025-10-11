@@ -12,7 +12,7 @@ UBareHandsAttackEffect::UBareHandsAttackEffect()
     FGameplayModifierInfo ModifierInfo;
     ModifierInfo.Attribute = UPS_AttributeSet::GetHealthAttribute();
     ModifierInfo.ModifierOp = EGameplayModOp::Additive;
-    ModifierInfo.ModifierMagnitude = FScalableFloat(-50.0f); 
+    ModifierInfo.ModifierMagnitude = FScalableFloat(-10.0f); 
         
     Modifiers.Add(ModifierInfo);
 }
