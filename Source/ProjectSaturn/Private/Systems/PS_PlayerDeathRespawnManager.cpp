@@ -27,13 +27,24 @@ void UPS_PlayerDeathRespawnManager::SpawnPlayer(APlayerController* PlayerControl
 
 void UPS_PlayerDeathRespawnManager::RespawnPlayer(APlayerController* PlayerController)
 {
-    UE_LOG(LogTemp, Display, TEXT("Starting Player Respawn sequence..."));
+    UE_LOG(LogTemp, Display, TEXT("Starting Respawn sequence for %s..."), *PlayerController->GetPawn()->GetName());
+    
     if (!PlayerController) return;
 
+    FTransform SpawnPoint = FTransform();
+    
     TArray<AActor*> RechargingCapsules;
     UGameplayStatics::GetAllActorsOfClass(this, APS_Prop_RechargingCapsule::StaticClass(), RechargingCapsules);
-    if (RechargingCapsules.Num() == 0) return;
-    const APS_Prop_RechargingCapsule* RechargingCapsule = Cast<APS_Prop_RechargingCapsule>(RechargingCapsules[0]);
+
+    for (auto Actor : RechargingCapsules)
+    {
+        if (const APS_Prop_RechargingCapsule* RechargingCapsule = Cast<APS_Prop_RechargingCapsule>(Actor))
+            if (RechargingCapsule->IsBusy() == false)
+            {
+                SpawnPoint = RechargingCapsule->GetAnimInteractionPointTransforms();
+                break;
+            }
+    }
 
     APS_Character* Character = Cast<APS_Character>(PlayerController->GetCharacter());
     if (Character == nullptr) return;
@@ -45,12 +56,10 @@ void UPS_PlayerDeathRespawnManager::RespawnPlayer(APlayerController* PlayerContr
         AbilitySystemComponent->SetNumericAttributeBase(UPS_AttributeSet::GetEnergyAttribute(), DefaultAttributeSet->GetEnergy());
     }
     
-    Character->GetRootComponent()->SetWorldTransform(RechargingCapsule->GetAnimInteractionPointTransforms(), false,
+    Character->GetRootComponent()->SetWorldTransform(SpawnPoint, false,
         nullptr, ETeleportType::TeleportPhysics);
     
     Character->StartRespawnSequence();
-
-    PlayerController->PlayerCameraManager->StartCameraFade(1, 0, 5, FColor::Black, true, false);
 }
 
 void UPS_PlayerDeathRespawnManager::OnZeroHealthEnergy(AActor* Actor)
@@ -66,7 +75,5 @@ void UPS_PlayerDeathRespawnManager::OnZeroHealthEnergy(AActor* Actor)
     if (!PlayerController) return;
 
     FTimerHandle DeathSequenceTimer;
-    GetWorld()->GetTimerManager().SetTimer(DeathSequenceTimer,
-        [this, PlayerController]() { ThisClass::RespawnPlayer(PlayerController); }, DeathSequenceLength,
-        false); 
+    GetWorld()->GetTimerManager().SetTimer(DeathSequenceTimer,[this, PlayerController]() { ThisClass::RespawnPlayer(PlayerController); }, DeathSequenceLength, false); 
 }

@@ -115,6 +115,10 @@ void APS_Character::Interact()
 void APS_Character::StartRespawnSequence()
 {
     bIsDead = false;
+
+    if (const APlayerController* PlayerController = Cast<APlayerController>(GetController()))
+        PlayerController->PlayerCameraManager->StartCameraFade(1, 0, 5, FColor::Black, true, false);
+    
     if (DisableSpawnAnimation)
     {
         EndInteraction();
@@ -122,8 +126,7 @@ void APS_Character::StartRespawnSequence()
     }
 
     bIsInteracting = true;
-    GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ThisClass::EndInteraction);
-    // delay for AnimInstance initialization
+    GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ThisClass::EndInteraction); // delay for AnimInstance initialization
 }
 
 void APS_Character::StartDeathSequence()
@@ -135,11 +138,8 @@ void APS_Character::StartDeathSequence()
 
     const float SequenceLength = AnimInstance->Montage_Play(DeathAnimation);
 
-    if (APlayerController* PlayerController = Cast<APlayerController>(GetController()))
-    {
-        PlayerController->PlayerCameraManager->StartCameraFade(0, 1, SequenceLength / 2, FLinearColor::Black, true,
-            true);
-    }
+    if (const APlayerController* PlayerController = Cast<APlayerController>(GetController()))
+        PlayerController->PlayerCameraManager->StartCameraFade(0, 1, SequenceLength / 2, FLinearColor::Black, true, true);
 }
 
 void APS_Character::StartInteraction()
@@ -165,7 +165,6 @@ void APS_Character::EndInteraction()
         return;
     }
 
-    NearbyInteractableProp->StopInteract();
 
     if (!AnimInstance || DisableSpawnAnimation)
     {
@@ -187,6 +186,10 @@ void APS_Character::OnFinishPlayStartingAnimMontage()
 void APS_Character::OnFinishPlayEndingAnimMontage()
 {
     bIsInteracting = false;
+    
+    if (NearbyInteractableProp)
+        NearbyInteractableProp->StopInteract();
+    
     GetWorldTimerManager().ClearTimer(MontageDurationTimer);
 }
 
@@ -260,6 +263,8 @@ void APS_Character::OnRep_bIsDead()
 {
     if (bIsDead)
         StartDeathSequence();
+    else
+        StartRespawnSequence();
 }
 
 void APS_Character::Server_UpdateRotation_Implementation(const FRotator NewRotation)

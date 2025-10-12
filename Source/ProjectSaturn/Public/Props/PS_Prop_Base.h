@@ -36,6 +36,9 @@ public:
     virtual void ShowTooltip(const bool Value);
     UFUNCTION(BlueprintPure)
     FTransform GetAnimInteractionPointTransforms() const { return AnimationInteractionPoint->GetComponentTransform(); };
+
+    UFUNCTION(BlueprintPure)
+    bool IsBusy() const { return InteractingCharacter ? true : false; };
     
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
     FInteractionAnimationsStorage AnimationStorage;

@@ -16,6 +16,8 @@ class PROJECTSATURN_API APS_GameMode : public AGameModeBase
 
 public:
     UPS_LoadSaveManager* GetLoadSaveManager() const { return LoadSaveManager; };
+
+    virtual void PostLogin(APlayerController* NewPlayer) override;
     
 protected:
     UPROPERTY()

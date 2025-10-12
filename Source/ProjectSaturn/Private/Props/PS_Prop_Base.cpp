@@ -28,7 +28,7 @@ APS_Prop_Base::APS_Prop_Base()
 
 void APS_Prop_Base::StartInteract(ACharacter* Character)
 {
-    if (!Character) return;
+    if (!Character || InteractingCharacter) return;
     InteractingCharacter = Character;
 }
 
