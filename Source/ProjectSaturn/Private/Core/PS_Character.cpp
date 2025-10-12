@@ -115,7 +115,11 @@ void APS_Character::Interact()
 void APS_Character::StartRespawnSequence()
 {
     bIsDead = false;
-    if (DisableSpawnAnimation) return;
+    if (DisableSpawnAnimation)
+    {
+        EndInteraction();
+        return;
+    }
 
     bIsInteracting = true;
     GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ThisClass::EndInteraction);
@@ -163,9 +167,13 @@ void APS_Character::EndInteraction()
 
     NearbyInteractableProp->StopInteract();
 
-    if (!AnimInstance) return;
+    if (!AnimInstance || DisableSpawnAnimation)
+    {
+        OnFinishPlayEndingAnimMontage();
+        return;
+    }
+    
     float MontageDuration = AnimInstance->EndInteractionWithProp(NearbyInteractableProp);
-
     GetWorld()->GetTimerManager().SetTimer(MontageDurationTimer, this, &ThisClass::OnFinishPlayEndingAnimMontage,
         MontageDuration, false);
 }
@@ -184,7 +192,7 @@ void APS_Character::OnFinishPlayEndingAnimMontage()
 
 void APS_Character::OnZeroHealthEnergy(AActor* Actor)
 {
-    if (bIsDead) return;
+    if (!HasAuthority() || bIsDead) return;
     bIsDead = true;
     
     StartDeathSequence();
@@ -246,6 +254,12 @@ void APS_Character::RotateToMouseCursor()
 void APS_Character::OnRep_ReplicatedRotation()
 {
     SetActorRotation(ReplicatedRotation);
+}
+
+void APS_Character::OnRep_bIsDead()
+{
+    if (bIsDead)
+        StartDeathSequence();
 }
 
 void APS_Character::Server_UpdateRotation_Implementation(const FRotator NewRotation)

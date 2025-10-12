@@ -10,6 +10,7 @@
 #include "Library/PS_Structs.h"
 #include "PS_Character.generated.h"
 
+struct FInputActionValue;
 class UPS_AttributeSet;
 class UPS_AbilitySystemComponent;
 class APS_Prop_Base;
@@ -68,7 +69,7 @@ protected:
     TEnumAsByte<EDrawDebugTrace::Type> DrawDebugTraces = EDrawDebugTrace::None;
     UPROPERTY(BlueprintReadWrite)
     bool bIsInteracting = false;
-    UPROPERTY(BlueprintReadWrite)
+    UPROPERTY(ReplicatedUsing = OnRep_bIsDead, BlueprintReadOnly)
     bool bIsDead = false;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
@@ -121,6 +122,9 @@ protected:
     void OnRep_ReplicatedRotation();
     UFUNCTION(Server, Unreliable)
     void Server_UpdateRotation(const FRotator NewRotation);
+
+    UFUNCTION()
+    void OnRep_bIsDead();
 
     FTimerHandle ReplicationTimer;
     UFUNCTION(BlueprintCallable)
